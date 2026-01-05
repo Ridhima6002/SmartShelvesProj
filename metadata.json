@@ -1,0 +1,7 @@
+{
+  "name": "SmartShelves - SPIT Library Management System",
+  "description": "A modern, student-centric library dashboard for Sardar Patel Institute of Technology featuring AI assistance, real-time queue monitoring, and interactive rack navigation.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
