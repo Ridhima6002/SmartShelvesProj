@@ -6,16 +6,25 @@ import BookDetail from './components/BookDetail';
 import StudentDashboard from './components/StudentDashboard';
 import AIChatbot from './components/AIChatbot';
 import RackMap from './components/RackMap';
+import AuthModal from './components/AuthModal';
 import { MOCK_BOOKS, MOCK_USER, SCHEDULES } from './data';
 import { Book, Year, Branch, User } from './types';
+import { onAuthStateChanged, signOut } from './services/firebase';
 import { ChevronRight, Calendar, BookOpen, Library, BrainCircuit, LayoutGrid, Zap, Filter, ArrowLeft } from 'lucide-react';
 
 const App: React.FC = () => {
   const [view, setView] = useState('dashboard');
-  const [user, setUser] = useState<User | null>(MOCK_USER); // Default to logged in for preview
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [user, setUser] = useState<User | null>(import.meta.env.VITE_FIREBASE_API_KEY ? null : MOCK_USER);
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [activeYear, setActiveYear] = useState<Year>('SE');
   const [activeBranch, setActiveBranch] = useState<Branch>('EXTC');
+
+  // Subscribe to Firebase auth state
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged((u) => setUser(u));
+    return () => unsubscribe();
+  }, []);
 
   const filteredBooks = MOCK_BOOKS.filter(b => b.year === activeYear && (activeYear === 'FE' ? true : b.branch === activeBranch));
 
@@ -26,8 +35,8 @@ const App: React.FC = () => {
     <div className="min-h-screen bg-[#f8fafc] text-slate-800 pb-24">
       <Navbar 
         user={user} 
-        onLogin={() => setUser(MOCK_USER)} 
-        onLogout={() => setUser(null)}
+        onLogin={() => setShowAuthModal(true)} 
+        onLogout={() => signOut()}
         onNavigate={(v) => setView(v)}
       />
 
@@ -229,6 +238,8 @@ const App: React.FC = () => {
           }}
         />
       )}
+
+      <AuthModal open={showAuthModal} onClose={() => setShowAuthModal(false)} onSuccess={(u) => setUser(u)} />
 
       <AIChatbot />
 
