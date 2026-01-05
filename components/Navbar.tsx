@@ -2,16 +2,17 @@
 import React, { useState } from 'react';
 import { LOGO } from '../constants';
 import { User } from '../types';
-import { LogOut, User as UserIcon, BookOpen, CreditCard, ChevronDown } from 'lucide-react';
+import { LogOut, User as UserIcon, BookOpen, CreditCard, ChevronDown, Key } from 'lucide-react';
 
 interface NavbarProps {
   user: User | null;
   onLogin: () => void;
+  onAdminLogin: () => void;
   onLogout: () => void;
   onNavigate: (view: string) => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout, onNavigate }) => {
+const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onAdminLogin, onLogout, onNavigate }) => {
   const [showDropdown, setShowDropdown] = useState(false);
 
   return (
@@ -21,26 +22,23 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onLogout, onNavigate }) 
       </div>
 
       <div className="flex items-center gap-6">
-        <button 
-          onClick={() => onNavigate('admin')}
-          className="text-slate-500 hover:text-[#003366] text-sm font-medium transition-colors"
-        >
-          Admin Portal
-        </button>
-
         {!user ? (
-          <div className="flex gap-3">
+          <div className="flex gap-3 items-center">
             <button 
               onClick={onLogin}
-              className="px-4 py-2 text-sm font-semibold text-[#003366] hover:bg-slate-100 rounded-full transition-all"
+              className="px-4 py-2 text-sm font-semibold text-[#003366] bg-white border border-slate-100 rounded-full shadow-sm hover:shadow-md transition-all active:scale-95 flex items-center gap-2"
+              aria-label="Student Login"
             >
-              Log In
+              <UserIcon className="w-4 h-4" />
+              <span className="hidden sm:inline">Student Login</span>
             </button>
-            <button 
-              onClick={onLogin}
-              className="px-5 py-2 text-sm font-semibold text-white bg-[#003366] rounded-full shadow-md hover:shadow-lg transition-all active:scale-95"
+            <button
+              onClick={onAdminLogin}
+              className="px-4 py-2 text-sm font-semibold text-[#003366] bg-white border border-slate-100 rounded-full transition-all flex items-center gap-2"
+              aria-label="Admin Login"
             >
-              Sign Up
+              <Key className="w-4 h-4" />
+              <span className="hidden sm:inline">Admin Login</span>
             </button>
           </div>
         ) : (

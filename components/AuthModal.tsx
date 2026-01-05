@@ -57,13 +57,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, onClose, onSuccess }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="w-full max-w-md bg-white rounded-2xl p-6 shadow-2xl">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-bold text-xl">{mode === 'signin' ? 'Log In' : 'Sign Up'}</h3>
+          <h3 className="font-bold text-xl">Student Login</h3>
           <button onClick={onClose} className="p-1 rounded-full hover:bg-slate-100">
             <X className="w-5 h-5 text-slate-500" />
           </button>
         </div>
 
-        <div className="mb-4 text-sm text-slate-500">{mode === 'signin' ? 'Sign in to your account' : 'Create a new account'}</div>
+        <div className="mb-4 text-sm text-slate-500">Sign in or create an account using Email/Password or Google.</div>
 
         {mode === 'signin' && (
           <div className="mb-4">
@@ -105,8 +105,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, onClose, onSuccess }) => {
         <div className="mt-4 text-center text-sm text-slate-500">
           {mode === 'signin' ? (
             <>
-              Don’t have an account?{' '}
-              <button onClick={() => setMode('signup')} className="font-bold text-[#003366]">Sign up</button>
+              New student?{' '}
+              <button onClick={() => setMode('signup')} className="font-bold text-[#003366]">Create an account</button>
             </>
           ) : (
             <>

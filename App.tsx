@@ -36,6 +36,7 @@ const App: React.FC = () => {
       <Navbar 
         user={user} 
         onLogin={() => setShowAuthModal(true)} 
+        onAdminLogin={() => setView('admin')}
         onLogout={() => signOut()}
         onNavigate={(v) => setView(v)}
       />
