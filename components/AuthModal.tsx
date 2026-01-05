@@ -5,16 +5,18 @@ import { User } from '../types';
 
 interface AuthModalProps {
   open: boolean;
+  admin?: boolean;
   onClose: () => void;
   onSuccess: (user: User | null) => void;
 }
 
-const AuthModal: React.FC<AuthModalProps> = ({ open, onClose, onSuccess }) => {
+const AuthModal: React.FC<AuthModalProps> = ({ open, admin = false, onClose, onSuccess }) => {
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [verifying, setVerifying] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   if (!open) return null;
@@ -26,12 +28,22 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, onClose, onSuccess }) => {
     try {
       if (mode === 'signin') {
         const user = await signInWithEmail(email, password);
-        onSuccess(user);
+        if (admin) {
+          // For admin flow, wait for server-side admin verification before treating as signed-in
+          setVerifying(true);
+        } else {
+          onSuccess(user);
+          onClose();
+        }
       } else {
         const user = await signUpWithEmail(email, password, name || undefined);
-        onSuccess(user);
+        if (admin) {
+          setVerifying(true);
+        } else {
+          onSuccess(user);
+          onClose();
+        }
       }
-      onClose();
     } catch (err: any) {
       setError(err?.message || 'Authentication failed');
     } finally {
@@ -44,8 +56,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, onClose, onSuccess }) => {
     setError(null);
     try {
       const user = await signInWithGoogle();
-      onSuccess(user);
-      onClose();
+      if (admin) {
+        setVerifying(true);
+      } else {
+        onSuccess(user);
+        onClose();
+      }
     } catch (err: any) {
       setError(err?.message || 'Google sign-in failed');
     } finally {
@@ -57,13 +73,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, onClose, onSuccess }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="w-full max-w-md bg-white rounded-2xl p-6 shadow-2xl">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-bold text-xl">Student Login</h3>
+          <h3 className="font-bold text-xl">{admin ? 'Admin Login' : 'Student Login'}</h3>
           <button onClick={onClose} className="p-1 rounded-full hover:bg-slate-100">
             <X className="w-5 h-5 text-slate-500" />
           </button>
         </div>
 
-        <div className="mb-4 text-sm text-slate-500">Sign in or create an account using Email/Password or Google.</div>
+        <div className="mb-4 text-sm text-slate-500">{admin ? 'Sign in with an authorized admin account to access admin features.' : 'Sign in or create an account using Email/Password or Google.'}</div>
 
         {mode === 'signin' && (
           <div className="mb-4">
@@ -95,8 +111,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, onClose, onSuccess }) => {
 
           {error && <div className="text-sm text-red-500">{error}</div>}
 
+        {verifying && (
+          <div className="text-sm text-slate-600 font-medium">Verifying admin access, please wait...</div>
+        )}
+
           <div className="flex items-center justify-between gap-3">
-            <button disabled={loading} type="submit" className="px-6 py-3 bg-[#003366] text-white rounded-2xl font-bold w-full">
+            <button disabled={loading || verifying} type="submit" className="px-6 py-3 bg-[#003366] text-white rounded-2xl font-bold w-full">
               {loading ? 'Please wait...' : mode === 'signin' ? 'Log In' : 'Create Account'}
             </button>
           </div>

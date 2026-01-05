@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import BookCard from './components/BookCard';
 import BookDetail from './components/BookDetail';
 import StudentDashboard from './components/StudentDashboard';
+import AdminPortal from './components/AdminPortal';
 import AIChatbot from './components/AIChatbot';
 import RackMap from './components/RackMap';
 import AuthModal from './components/AuthModal';
@@ -19,11 +20,46 @@ const App: React.FC = () => {
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [activeYear, setActiveYear] = useState<Year>('SE');
   const [activeBranch, setActiveBranch] = useState<Branch>('EXTC');
+  const [adminIntent, setAdminIntent] = useState(false);
 
-  // Subscribe to Firebase auth state
+  // Subscribe to Firebase auth state and handle admin intent redirect
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged((u) => setUser(u));
+    const unsubscribe = onAuthStateChanged((u) => {
+      setUser(u);
+      if (u && adminIntent) {
+        if (u.role === 'admin') {
+          setView('admin');
+          setShowAuthModal(false);
+        } else {
+          alert('You are not authorized as admin. Redirecting to main view.');
+          // Sign out the non-admin user and return to dashboard
+          signOut().catch(() => {});
+          setView('dashboard');
+          setShowAuthModal(false);
+        }
+        setAdminIntent(false);
+      }
+    });
     return () => unsubscribe();
+  }, [adminIntent]);
+
+  // Keep URL in sync with view (simple routing behavior)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      if (view === 'admin') {
+        window.history.pushState({}, '', '/admin');
+      } else if (view === 'dashboard') {
+        window.history.pushState({}, '', '/');
+      }
+    }
+  }, [view]);
+
+  // On mount, read the path to initialize view
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const p = window.location.pathname;
+      if (p === '/admin') setView('admin');
+    }
   }, []);
 
   const filteredBooks = MOCK_BOOKS.filter(b => b.year === activeYear && (activeYear === 'FE' ? true : b.branch === activeBranch));
@@ -36,7 +72,14 @@ const App: React.FC = () => {
       <Navbar 
         user={user} 
         onLogin={() => setShowAuthModal(true)} 
-        onAdminLogin={() => setView('admin')}
+        onAdminLogin={() => {
+          if (user && user.role === 'admin') {
+            setView('admin');
+          } else {
+            setAdminIntent(true);
+            setShowAuthModal(true);
+          }
+        }}
         onLogout={() => signOut()}
         onNavigate={(v) => setView(v)}
       />
@@ -220,11 +263,18 @@ const App: React.FC = () => {
 
         {/* Admin Placeholder */}
         {view === 'admin' && (
-          <div className="flex flex-col items-center justify-center py-32 space-y-8">
-            <h1 className="text-4xl font-black text-slate-800">Admin Portal</h1>
-            <p className="text-slate-500">Coming soon.</p>
-            <button onClick={() => setView('dashboard')} className="px-10 py-4 bg-[#003366] text-white font-black rounded-2xl">Back to Dashboard</button>
-          </div>
+          user && user.role === 'admin' ? (
+            <AdminPortal user={user} onBack={() => setView('dashboard')} />
+          ) : (
+            <div className="flex flex-col items-center justify-center py-32 space-y-6">
+              <h1 className="text-3xl font-bold text-slate-800">Admin access required</h1>
+              <p className="text-slate-500">Please sign in with an admin account to access this portal.</p>
+              <div className="flex gap-4">
+                <button onClick={() => { setAdminIntent(true); setShowAuthModal(true); }} className="px-6 py-3 bg-white border border-slate-100 rounded-2xl">Sign in as Admin</button>
+                <button onClick={() => setView('dashboard')} className="px-6 py-3 bg-[#003366] text-white rounded-2xl">Back to Dashboard</button>
+              </div>
+            </div>
+          )
         )}
       </main>
 
@@ -240,7 +290,7 @@ const App: React.FC = () => {
         />
       )}
 
-      <AuthModal open={showAuthModal} onClose={() => setShowAuthModal(false)} onSuccess={(u) => setUser(u)} />
+      <AuthModal open={showAuthModal} admin={adminIntent} onClose={() => { setShowAuthModal(false); setAdminIntent(false); }} onSuccess={(u) => setUser(u)} />
 
       <AIChatbot />
 

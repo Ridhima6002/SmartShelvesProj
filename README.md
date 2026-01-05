@@ -29,3 +29,10 @@ To enable user authentication with Firebase:
 4. Restart the dev server after adding `.env.local`.
 
 We use the modular Firebase SDK; sign-in and sign-up are handled in `components/AuthModal.tsx` and the Firebase initialization is in `services/firebase.ts`.
+
+Data storage:
+
+- **Students**: basic profile and app-specific fields are stored in Firestore under `students/{uid}` when a user signs up or signs in.
+- **Admins**: when a user is granted admin access (via the `scripts/setAdminClaim.js` script), an `admins/{uid}` document is created/updated as well.
+
+Make sure your Firestore security rules and authorized domains are configured appropriately for your deployment.
