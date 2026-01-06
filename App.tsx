@@ -8,7 +8,8 @@ import AdminPortal from './components/AdminPortal';
 import AIChatbot from './components/AIChatbot';
 import RackMap from './components/RackMap';
 import AuthModal from './components/AuthModal';
-import { MOCK_BOOKS, MOCK_USER, SCHEDULES } from './data';
+import { supabase } from './services/supabase';
+import { SCHEDULES,RACK_INFO } from './data';
 import { Book, Year, Branch, User } from './types';
 import { onAuthStateChanged, signOut } from './services/firebase';
 import { ChevronRight, Calendar, BookOpen, Library, BrainCircuit, LayoutGrid, Zap, Filter, ArrowLeft } from 'lucide-react';
@@ -17,11 +18,13 @@ import { ChevronRight, Calendar, BookOpen, Library, BrainCircuit, LayoutGrid, Za
 const App: React.FC = () => {
   const [view, setView] = useState('dashboard');
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [user, setUser] = useState<User | null>(import.meta.env.VITE_FIREBASE_API_KEY ? null : MOCK_USER);
+  const [user, setUser] = useState<User | null>(null);
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
-  const [activeYear, setActiveYear] = useState<Year>('SE');
-  const [activeBranch, setActiveBranch] = useState<Branch>('EXTC');
+  const [activeYear, setActiveYear] = useState<Year>('FE');
+  const [activeBranch, setActiveBranch] = useState<Branch>('CE');
   const [adminIntent, setAdminIntent] = useState(false);
+  const [books, setBooks] = useState<Book[]>([]);
+  const [loadingBooks, setLoadingBooks] = useState(true);
 
   // Subscribe to Firebase auth state and handle admin intent redirect
   useEffect(() => {
@@ -34,7 +37,7 @@ const App: React.FC = () => {
         } else {
           alert('You are not authorized as admin. Redirecting to main view.');
           // Sign out the non-admin user and return to dashboard
-          signOut().catch(() => {});
+          signOut().catch(() => { });
           setView('dashboard');
           setShowAuthModal(false);
         }
@@ -55,6 +58,38 @@ const App: React.FC = () => {
     }
   }, [view]);
 
+
+useEffect(() => {
+  const fetchBooks = async () => {
+    setLoadingBooks(true); // start loading
+
+    try {
+      const { data, error } = await supabase
+        .from('books')  // make sure table name is EXACT
+        .select('*');
+
+      console.log("Supabase data:", data);
+      console.log("Supabase error:", error);
+
+      if (error) {
+        console.error("Error fetching books:", error);
+        setBooks([]); // clear books if error
+      } else {
+        setBooks(data as Book[]); // set books from Supabase
+      }
+    } catch (err) {
+      console.error("Unexpected fetch error:", err);
+      setBooks([]); // clear books on unexpected error
+    } finally {
+      setLoadingBooks(false); // stop loading
+    }
+  };
+
+  fetchBooks();
+}, []);
+
+
+
   // On mount, read the path to initialize view
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -63,16 +98,20 @@ const App: React.FC = () => {
     }
   }, []);
 
-  const filteredBooks = MOCK_BOOKS.filter(b => b.year === activeYear && (activeYear === 'FE' ? true : b.branch === activeBranch));
+
+  const filteredBooks = books.filter(
+    (b) => b.year === activeYear && (activeYear === 'FE' ? true : b.branch === activeBranch)
+  );
+
 
   const years: Year[] = ['FE', 'SE', 'TE', 'BE'];
   const branches: Branch[] = ['CE', 'CSE', 'EXTC'];
 
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-800 pb-24">
-      <Navbar 
-        user={user} 
-        onLogin={() => setShowAuthModal(true)} 
+      <Navbar
+        user={user}
+        onLogin={() => setShowAuthModal(true)}
         onAdminLogin={() => {
           if (user && user.role === 'admin') {
             setView('admin');
@@ -146,7 +185,7 @@ const App: React.FC = () => {
                 </div>
                 <div className="flex gap-1">
                   {years.map(y => (
-                    <button 
+                    <button
                       key={y}
                       onClick={() => setActiveYear(y)}
                       className={`px-6 py-2 rounded-2xl font-bold text-sm transition-all ${activeYear === y ? 'bg-[#003366] text-white shadow-lg' : 'text-slate-500 hover:bg-slate-50'}`}
@@ -160,7 +199,7 @@ const App: React.FC = () => {
                     <div className="w-px h-6 bg-slate-200 hidden sm:block mx-1"></div>
                     <div className="flex gap-1">
                       {branches.map(b => (
-                        <button 
+                        <button
                           key={b}
                           onClick={() => setActiveBranch(b)}
                           className={`px-6 py-2 rounded-2xl font-bold text-sm transition-all ${activeBranch === b ? 'bg-[#FF9933] text-white shadow-lg' : 'text-slate-500 hover:bg-slate-50'}`}
@@ -185,17 +224,27 @@ const App: React.FC = () => {
                 </button>
               </div>
               <div className="flex gap-6 overflow-x-auto pb-6 pt-2 scrollbar-hide snap-x">
-                {filteredBooks.length > 0 ? filteredBooks.map(book => (
-                  <div key={book.id} className="snap-center">
-                    <BookCard book={book} onClick={(b) => setSelectedBook(b)} />
+                {loadingBooks ? (
+                  // Show a loading state while fetching
+                  <div className="w-full h-48 flex items-center justify-center text-slate-400">
+                    Loading books...
                   </div>
-                )) : (
+                ) : filteredBooks.length > 0 ? (
+                  // Render books once loaded
+                  filteredBooks.map((book) => (
+                    <div key={book.id} className="snap-center">
+                      <BookCard book={book} onClick={(b) => setSelectedBook(b)} />
+                    </div>
+                  ))
+                ) : (
+                  // No books found for this selection
                   <div className="w-full h-48 bg-slate-50 rounded-[2.5rem] border border-dashed border-slate-200 flex flex-col items-center justify-center text-slate-400">
                     <BookOpen className="w-12 h-12 mb-3 opacity-20" />
                     <p className="font-bold">No books found for this selection.</p>
                   </div>
                 )}
               </div>
+
             </section>
 
             {/* Library Rack Navigation */}
@@ -228,16 +277,16 @@ const App: React.FC = () => {
               </div>
 
               <div className="bg-[#FF9933] p-10 rounded-[3rem] text-white shadow-xl flex flex-col justify-center relative overflow-hidden group">
-                 <div className="absolute right-[-10%] bottom-[-10%] p-12 opacity-10 rotate-12 group-hover:scale-110 transition-transform duration-1000">
-                    <BrainCircuit className="w-64 h-64" />
-                 </div>
-                 <h3 className="text-4xl font-black mb-4">AI Chat Assistant</h3>
-                 <p className="text-orange-50 font-medium mb-8 max-w-xs text-lg opacity-90 leading-snug">
-                   Need help finding a specific rack or book? Ask Smarty, our intelligent library bot.
-                 </p>
-                 <button className="w-fit px-10 py-4 bg-white text-[#FF9933] font-black rounded-2xl shadow-xl hover:shadow-white/20 transition-all flex items-center gap-2">
-                   Launch AI Chat <Zap className="w-4 h-4" />
-                 </button>
+                <div className="absolute right-[-10%] bottom-[-10%] p-12 opacity-10 rotate-12 group-hover:scale-110 transition-transform duration-1000">
+                  <BrainCircuit className="w-64 h-64" />
+                </div>
+                <h3 className="text-4xl font-black mb-4">AI Chat Assistant</h3>
+                <p className="text-orange-50 font-medium mb-8 max-w-xs text-lg opacity-90 leading-snug">
+                  Need help finding a specific rack or book? Ask Smarty, our intelligent library bot.
+                </p>
+                <button className="w-fit px-10 py-4 bg-white text-[#FF9933] font-black rounded-2xl shadow-xl hover:shadow-white/20 transition-all flex items-center gap-2">
+                  Launch AI Chat <Zap className="w-4 h-4" />
+                </button>
               </div>
             </section>
           </>
@@ -247,7 +296,7 @@ const App: React.FC = () => {
         {view === 'profile' && user && (
           <div className="space-y-8">
             <div className="flex items-center gap-4 mb-8">
-              <button 
+              <button
                 onClick={() => setView('dashboard')}
                 className="p-3 bg-white rounded-2xl border border-slate-100 shadow-sm text-slate-400 hover:text-[#003366] transition-colors"
               >
@@ -258,7 +307,7 @@ const App: React.FC = () => {
                 <p className="text-slate-500 font-medium">Manage your issues and subscriptions</p>
               </div>
             </div>
-            <StudentDashboard user={user} books={MOCK_BOOKS} />
+            <StudentDashboard user={user} books={filteredBooks} />
           </div>
         )}
 
@@ -281,8 +330,8 @@ const App: React.FC = () => {
 
       {/* Overlays */}
       {selectedBook && (
-        <BookDetail 
-          book={selectedBook} 
+        <BookDetail
+          book={selectedBook}
           onClose={() => setSelectedBook(null)}
           onAction={(b) => {
             alert(b.available ? `Successfully issued: ${b.title}` : `Joined waitlist for: ${b.title}`);

@@ -9,16 +9,17 @@ export interface Book {
   author: string;
   available: boolean;
   copies: number;
-  totalCopies: number;
-  demand: 'Low' | 'Medium' | 'High';
-  queuePosition?: number;
-  tags: string[];
-  rack: number;
+  total_copies: number; // ✅ now same everywhere
+  demand?: string;
+  tags?: string[];
+  rack?: number;
   year: Year;
   branch: Branch;
-  semester: Semester;
-  image: string;
+  semester: number;
+  image?: string;
+  course_code?: string;     // NEW
 }
+
 
 export interface User {
   id: string;

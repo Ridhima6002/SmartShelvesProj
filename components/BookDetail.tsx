@@ -34,7 +34,7 @@ const BookDetail: React.FC<BookDetailProps> = ({ book, onClose, onAction }) => {
           <div className="flex flex-wrap gap-2 mb-6">
             <span className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-semibold">Semester {book.semester}</span>
             <span className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-semibold">{book.branch}</span>
-            {book.tags.map(tag => (
+            {book.tags?.map(tag => (
               <span key={tag} className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-semibold">{tag}</span>
             ))}
           </div>
@@ -45,7 +45,7 @@ const BookDetail: React.FC<BookDetailProps> = ({ book, onClose, onAction }) => {
                 <Layers className="w-3 h-3" /> Availability
               </p>
               <p className={`text-lg font-bold ${book.available ? 'text-emerald-600' : 'text-rose-600'}`}>
-                {book.available ? `${book.copies} of ${book.totalCopies} left` : 'Out of Stock'}
+                {book.available ? `${book.copies} of ${book.total_copies} left` : 'Out of Stock'}
               </p>
             </div>
             <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
@@ -68,9 +68,9 @@ const BookDetail: React.FC<BookDetailProps> = ({ book, onClose, onAction }) => {
                     <p className="text-rose-600 text-sm">Estimated wait: 4-6 days</p>
                   </div>
                 </div>
-                <span className="px-4 py-1.5 bg-rose-200 text-rose-800 rounded-full font-bold text-sm">
+                {/* <span className="px-4 py-1.5 bg-rose-200 text-rose-800 rounded-full font-bold text-sm">
                   You are #{book.queuePosition || 1} in queue
-                </span>
+                </span> */}
               </div>
               <div className="w-full h-3 bg-rose-100 rounded-full overflow-hidden">
                 <div className="w-[75%] h-full bg-rose-500"></div>
