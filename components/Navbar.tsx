@@ -27,18 +27,18 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onAdminLogin, onLogout, 
             <button 
               onClick={onLogin}
               className="px-4 py-2 text-sm font-semibold text-[#003366] bg-white border border-slate-100 rounded-full shadow-sm hover:shadow-md transition-all active:scale-95 flex items-center gap-2"
-              aria-label="Student Login"
+              aria-label="student portal"
             >
               <UserIcon className="w-4 h-4" />
-              <span className="hidden sm:inline">Student Login</span>
+              <span className="hidden sm:inline">Student Portal</span>
             </button>
             <button
               onClick={onAdminLogin}
               className="px-4 py-2 text-sm font-semibold text-[#003366] bg-white border border-slate-100 rounded-full transition-all flex items-center gap-2"
-              aria-label="Admin Login"
+              aria-label="Admin Portal"
             >
               <Key className="w-4 h-4" />
-              <span className="hidden sm:inline">Admin Login</span>
+              <span className="hidden sm:inline">Admin Portal</span>
             </button>
           </div>
         ) : (

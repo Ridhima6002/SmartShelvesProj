@@ -13,6 +13,7 @@ import { Book, Year, Branch, User } from './types';
 import { onAuthStateChanged, signOut } from './services/firebase';
 import { ChevronRight, Calendar, BookOpen, Library, BrainCircuit, LayoutGrid, Zap, Filter, ArrowLeft } from 'lucide-react';
 
+
 const App: React.FC = () => {
   const [view, setView] = useState('dashboard');
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -301,6 +302,7 @@ const App: React.FC = () => {
       </footer>
     </div>
   );
+
 };
 
 export default App;

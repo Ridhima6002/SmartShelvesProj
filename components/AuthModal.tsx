@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { signInWithEmail, signUpWithEmail, signInWithGoogle } from '../services/firebase';
 import { User } from '../types';
+import { useEffect } from "react";
+//import { createStudentInSupabase } from '../services/supabase'; // adjust path
+
+
 
 interface AuthModalProps {
   open: boolean;
@@ -18,6 +22,16 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, admin = false, onClose, onS
   const [loading, setLoading] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    if (admin) setMode('signin');
+  }, [admin]);
+  useEffect(() => {
+    setError(null);
+    setEmail('');
+    setPassword('');
+    setName('');
+  }, [admin]);
+
 
   if (!open) return null;
 
@@ -32,14 +46,19 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, admin = false, onClose, onS
           // For admin flow, wait for server-side admin verification before treating as signed-in
           setVerifying(true);
         } else {
+          //await createStudentInSupabase({ uid: user.id });
           onSuccess(user);
           onClose();
+
         }
       } else {
-        const user = await signUpWithEmail(email, password, name || undefined);
+
         if (admin) {
-          setVerifying(true);
+          setError('Admin accounts cannot be created.');
+          setLoading(false);
+          return;
         } else {
+          const user = await signUpWithEmail(email, password);
           onSuccess(user);
           onClose();
         }
@@ -59,6 +78,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, admin = false, onClose, onS
       if (admin) {
         setVerifying(true);
       } else {
+        //await createStudentInSupabase({ uid: user.id });
         onSuccess(user);
         onClose();
       }
@@ -67,13 +87,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, admin = false, onClose, onS
     } finally {
       setLoading(false);
     }
-  }; 
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="w-full max-w-md bg-white rounded-2xl p-6 shadow-2xl">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-bold text-xl">{admin ? 'Admin Login' : 'Student Login'}</h3>
+          <h3 className="font-bold text-xl">{admin ? 'Admin Portal' : 'Student Portal'}</h3>
           <button onClick={onClose} className="p-1 rounded-full hover:bg-slate-100">
             <X className="w-5 h-5 text-slate-500" />
           </button>
@@ -92,7 +112,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, admin = false, onClose, onS
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {mode === 'signup' && (
+          {!admin && mode === 'signup' && (
             <div>
               <label className="text-xs text-slate-500 uppercase font-bold">Full name</label>
               <input required value={name} onChange={(e) => setName(e.target.value)} className="w-full mt-1 p-3 rounded-xl border border-slate-100" />
@@ -100,6 +120,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, admin = false, onClose, onS
           )}
 
           <div>
+
             <label className="text-xs text-slate-500 uppercase font-bold">Email</label>
             <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full mt-1 p-3 rounded-xl border border-slate-100" />
           </div>
@@ -111,30 +132,52 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, admin = false, onClose, onS
 
           {error && <div className="text-sm text-red-500">{error}</div>}
 
-        {verifying && (
-          <div className="text-sm text-slate-600 font-medium">Verifying admin access, please wait...</div>
-        )}
+          {verifying && (
+            <div className="text-sm text-slate-600 font-medium">Verifying admin access, please wait...</div>
+          )}
 
           <div className="flex items-center justify-between gap-3">
             <button disabled={loading || verifying} type="submit" className="px-6 py-3 bg-[#003366] text-white rounded-2xl font-bold w-full">
-              {loading ? 'Please wait...' : mode === 'signin' ? 'Log In' : 'Create Account'}
+              {loading
+                ? 'Please wait...'
+                : admin
+                  ? 'Log In'
+                  : mode === 'signin'
+                    ? 'Log In'
+                    : 'Create Account'}
+
             </button>
           </div>
         </form>
 
-        <div className="mt-4 text-center text-sm text-slate-500">
-          {mode === 'signin' ? (
-            <>
-              New student?{' '}
-              <button onClick={() => setMode('signup')} className="font-bold text-[#003366]">Create an account</button>
-            </>
-          ) : (
-            <>
-              Already have an account?{' '}
-              <button onClick={() => setMode('signin')} className="font-bold text-[#003366]">Log in</button>
-            </>
-          )}
-        </div>
+        {!admin && (
+          <div className="mt-4 text-center text-sm text-slate-500">
+            {mode === 'signin' ? (
+              <>
+                New student?{' '}
+                <button
+                  type="button"
+                  onClick={() => setMode('signup')}
+                  className="font-bold text-[#003366]"
+                >
+                  Create an account
+                </button>
+              </>
+            ) : (
+              <>
+                Already have an account?{' '}
+                <button
+                  type="button"
+                  onClick={() => setMode('signin')}
+                  className="font-bold text-[#003366]"
+                >
+                  Log in
+                </button>
+              </>
+            )}
+          </div>
+        )}
+
       </div>
     </div>
   );
