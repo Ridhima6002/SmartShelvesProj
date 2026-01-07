@@ -7,9 +7,10 @@ import StudentDashboard from './components/StudentDashboard';
 import AdminPortal from './components/AdminPortal';
 import AIChatbot from './components/AIChatbot';
 import RackMap from './components/RackMap';
+import SearchResults from './components/SearchResults'
 import AuthModal from './components/AuthModal';
 import { supabase } from './services/supabase';
-import { SCHEDULES,RACK_INFO } from './data';
+import { SCHEDULES, RACK_INFO } from './data';
 import { Book, Year, Branch, User } from './types';
 import { onAuthStateChanged, signOut } from './services/firebase';
 import { ChevronRight, Calendar, BookOpen, Library, BrainCircuit, LayoutGrid, Zap, Filter, ArrowLeft } from 'lucide-react';
@@ -25,6 +26,8 @@ const App: React.FC = () => {
   const [adminIntent, setAdminIntent] = useState(false);
   const [books, setBooks] = useState<Book[]>([]);
   const [loadingBooks, setLoadingBooks] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+
 
   // Subscribe to Firebase auth state and handle admin intent redirect
   useEffect(() => {
@@ -57,36 +60,39 @@ const App: React.FC = () => {
       }
     }
   }, [view]);
+  useEffect(() => {
+    setSelectedBook(null);
+  }, [view]);
 
 
-useEffect(() => {
-  const fetchBooks = async () => {
-    setLoadingBooks(true); // start loading
+  useEffect(() => {
+    const fetchBooks = async () => {
+      setLoadingBooks(true); // start loading
 
-    try {
-      const { data, error } = await supabase
-        .from('books')  // make sure table name is EXACT
-        .select('*');
+      try {
+        const { data, error } = await supabase
+          .from('books')  // make sure table name is EXACT
+          .select('*');
 
-      console.log("Supabase data:", data);
-      console.log("Supabase error:", error);
+        console.log("Supabase data:", data);
+        console.log("Supabase error:", error);
 
-      if (error) {
-        console.error("Error fetching books:", error);
-        setBooks([]); // clear books if error
-      } else {
-        setBooks(data as Book[]); // set books from Supabase
+        if (error) {
+          console.error("Error fetching books:", error);
+          setBooks([]); // clear books if error
+        } else {
+          setBooks(data as Book[]); // set books from Supabase
+        }
+      } catch (err) {
+        console.error("Unexpected fetch error:", err);
+        setBooks([]); // clear books on unexpected error
+      } finally {
+        setLoadingBooks(false); // stop loading
       }
-    } catch (err) {
-      console.error("Unexpected fetch error:", err);
-      setBooks([]); // clear books on unexpected error
-    } finally {
-      setLoadingBooks(false); // stop loading
-    }
-  };
+    };
 
-  fetchBooks();
-}, []);
+    fetchBooks();
+  }, []);
 
 
 
@@ -122,6 +128,10 @@ useEffect(() => {
         }}
         onLogout={() => signOut()}
         onNavigate={(v) => setView(v)}
+        onSearch={(query) => {
+          setSearchQuery(query);
+          setView('search');
+        }}
       />
 
       <main className="max-w-7xl mx-auto px-6 pt-24 space-y-12">
@@ -291,6 +301,14 @@ useEffect(() => {
             </section>
           </>
         )}
+{view === 'search' && (
+  <SearchResults
+    query={searchQuery}          // pass the search text
+    books={books}                // pass all books
+    onBack={() => setView('dashboard')}
+    onSelectBook={(book) => setSelectedBook(book)}
+  />
+)}
 
         {/* Profile/Student View */}
         {view === 'profile' && user && (
