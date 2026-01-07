@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { Book } from '../types';
-import { X, MapPin, Layers, Info, Check, Clock, TrendingUp } from 'lucide-react';
+import { X, Check, Clock, TrendingUp } from 'lucide-react';
 
 interface BookDetailProps {
   book: Book;
@@ -9,105 +8,106 @@ interface BookDetailProps {
   onAction: (book: Book) => void;
 }
 
+const demandDescriptions: Record<string, string> = {
+  High: "This book is highly recommended by students and frequently referred to by faculty. It’s excellent for grasping key concepts quickly.",
+  Medium: "This book is useful for analytical understanding and in-depth concept coverage. While it covers some topics thoroughly, it may not focus heavily on numerical problems.",
+  Low: "This book is ideal for concept building with exercises and questions after each chapter. It’s a gentle, structured way to strengthen understanding at your own pace."
+};
+
 const BookDetail: React.FC<BookDetailProps> = ({ book, onClose, onAction }) => {
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose}></div>
+    // CHANGE 1: Increased outer padding (md:py-24) to shrink the modal height significantly
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:py-24 bg-slate-900/60 backdrop-blur-sm" onClick={onClose}>
       
-      <div className="relative bg-white w-full max-w-4xl rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row animate-in fade-in slide-in-from-bottom-8 duration-300">
-        <button 
+      {/* Modal Container */}
+      <div 
+        className="relative bg-white w-full max-w-3xl rounded-2xl overflow-hidden shadow-2xl flex flex-col md:flex-row animate-in fade-in zoom-in duration-300"
+        onClick={(e) => e.stopPropagation()} // Prevent click from closing when clicking inside
+      >
+
+        {/* Close Button */}
+        <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 p-2 bg-white/20 backdrop-blur-md rounded-full text-slate-800 hover:bg-slate-100 transition-colors"
+          className="absolute top-3 right-3 z-10 p-2 bg-white/50 hover:bg-white backdrop-blur-md rounded-full text-slate-800 transition-all shadow-sm"
         >
-          <X className="w-6 h-6" />
+          <X className="w-5 h-5" />
         </button>
 
-        <div className="w-full md:w-1/3 h-64 md:h-auto relative">
+        {/* Left: Book Image */}
+        {/* Adjusted height to be compact on mobile, auto on desktop */}
+        <div className="w-full md:w-2/5 h-48 md:h-auto relative bg-slate-100">
           <img src={book.image} alt={book.title} className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#003366]/80 to-transparent flex flex-col justify-end p-8">
-            <span className="text-white/70 text-sm font-medium mb-1">Rack {book.rack}</span>
-            <h2 className="text-white text-2xl font-bold leading-tight">{book.title}</h2>
-          </div>
         </div>
 
-        <div className="w-full md:w-2/3 p-8 md:p-12 overflow-y-auto max-h-[80vh]">
-          <div className="flex flex-wrap gap-2 mb-6">
-            <span className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-semibold">Semester {book.semester}</span>
-            <span className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-semibold">{book.branch}</span>
-            {book.tags?.map(tag => (
-              <span key={tag} className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-semibold">{tag}</span>
-            ))}
+        {/* Right: Info Section */}
+        {/* Reduced padding (p-6) to make it more compact */}
+        <div className="w-full md:w-3/5 p-6 flex flex-col justify-center">
+          
+          {/* Header */}
+          <div className="mb-4">
+            <h2 className="text-2xl font-bold text-slate-800 leading-tight">{book.title}</h2>
+            <p className="text-sm text-slate-500 font-medium mt-1">by {book.author}</p>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 mb-8">
-            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-              <p className="text-slate-400 text-xs font-medium uppercase mb-1 flex items-center gap-2">
-                <Layers className="w-3 h-3" /> Availability
-              </p>
-              <p className={`text-lg font-bold ${book.available ? 'text-emerald-600' : 'text-rose-600'}`}>
-                {book.available ? `${book.copies} of ${book.total_copies} left` : 'Out of Stock'}
-              </p>
-            </div>
-            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-              <p className="text-slate-400 text-xs font-medium uppercase mb-1 flex items-center gap-2">
-                <MapPin className="w-3 h-3" /> Location
-              </p>
-              <p className="text-lg font-bold text-slate-800">Rack #{book.rack}</p>
-            </div>
-          </div>
-
-          {!book.available && (
-            <div className="mb-8 p-6 bg-rose-50 rounded-3xl border border-rose-100">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-rose-100 rounded-full flex items-center justify-center text-rose-600">
-                    <Clock className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-rose-900">Current Queue</h4>
-                    <p className="text-rose-600 text-sm">Estimated wait: 4-6 days</p>
-                  </div>
+          {/* Availability / Queue Section */}
+          <div className="mb-5">
+            {book.available ? (
+              <div className="flex items-center gap-3 p-3 bg-emerald-50 rounded-xl border border-emerald-100">
+                <div className="p-1.5 bg-white rounded-full shadow-sm text-emerald-600">
+                  <Check className="w-4 h-4" />
                 </div>
-                {/* <span className="px-4 py-1.5 bg-rose-200 text-rose-800 rounded-full font-bold text-sm">
-                  You are #{book.queuePosition || 1} in queue
-                </span> */}
+                <p className="text-emerald-800 font-semibold text-sm">
+                  {book.copies} available
+                </p>
               </div>
-              <div className="w-full h-3 bg-rose-100 rounded-full overflow-hidden">
-                <div className="w-[75%] h-full bg-rose-500"></div>
+            ) : (
+              // CHANGE 2: Redesigned Out of Stock Box
+              <div className="flex items-start gap-3 p-4 bg-gradient-to-br from-rose-50 to-white rounded-xl border border-rose-100 shadow-sm">
+                <div className="p-2 bg-white rounded-full shadow-sm text-rose-500 border border-rose-50">
+                  <Clock className="w-5 h-5" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex justify-between items-start">
+                    <h4 className="text-rose-900 font-bold text-sm">Out of Stock</h4>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-rose-400 bg-rose-100 px-2 py-0.5 rounded-full">
+                      Wait: 4-6 Days
+                    </span>
+                  </div>
+                  <p className="text-sm text-rose-600 mt-1">
+                    You are <span className="font-bold">#{book.queuePosition || 1}</span> in the queue.
+                  </p>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
-          <div className="space-y-6">
-            <div>
-              <h4 className="font-bold text-slate-800 mb-2 flex items-center gap-2">
-                <Info className="w-4 h-4 text-[#003366]" /> Synopsis
-              </h4>
-              <p className="text-slate-600 text-sm leading-relaxed">
-                This comprehensive textbook covers the fundamental concepts of {book.title} required for students of {book.branch} Semester {book.semester}. Includes solved examples and practice sets from previous SPIT examinations.
-              </p>
-            </div>
+          {/* Book Overview */}
+          <div className="mb-6">
+            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">
+              Overview
+            </h4>
+            <p className="text-sm text-slate-600 leading-relaxed line-clamp-3 md:line-clamp-none">
+              {demandDescriptions[book.demand || 'Low']}
+            </p>
+          </div>
 
-            <div className="pt-4 flex gap-4">
-              {book.available ? (
-                <button 
-                  onClick={() => onAction(book)}
-                  className="flex-1 py-4 bg-[#003366] text-white rounded-2xl font-bold shadow-xl hover:shadow-[#003366]/30 transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
-                >
-                  <Check className="w-5 h-5" /> Issue This Book
-                </button>
-              ) : (
-                <button 
-                  onClick={() => onAction(book)}
-                  className="flex-1 py-4 bg-rose-600 text-white rounded-2xl font-bold shadow-xl hover:shadow-rose-600/30 transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
-                >
-                  <TrendingUp className="w-5 h-5" /> Join the Queue
-                </button>
-              )}
-              <button className="px-6 py-4 bg-slate-100 text-slate-600 rounded-2xl font-bold hover:bg-slate-200 transition-colors">
-                Add to Wishlist
+          {/* Action Button */}
+          <div className="mt-auto">
+            {book.available ? (
+              <button
+                onClick={() => onAction(book)}
+                className="w-full py-3 bg-[#003366] text-white rounded-xl font-bold shadow-lg shadow-blue-900/20 hover:shadow-xl hover:bg-[#002855] transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
+              >
+                <Check className="w-4 h-4" /> Issue Book
               </button>
-            </div>
+            ) : (
+              <button
+                onClick={() => onAction(book)}
+                className="w-full py-3 bg-rose-600 text-white rounded-xl font-bold shadow-lg shadow-rose-600/20 hover:shadow-xl hover:bg-rose-700 transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
+              >
+                <TrendingUp className="w-4 h-4" /> Join Queue
+              </button>
+            )}
           </div>
         </div>
       </div>

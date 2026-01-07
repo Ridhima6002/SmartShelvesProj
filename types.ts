@@ -9,9 +9,9 @@ export interface Book {
   author: string;
   available: boolean;
   copies: number;
-  total_copies: number; // ✅ now same everywhere
+  //total_copies: number; // ✅ now same everywhere
   demand?: string;
-  tags?: string[];
+  //tags?: string[];
   rack?: number;
   year: Year;
   branch: Branch;
