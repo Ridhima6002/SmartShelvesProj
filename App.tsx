@@ -177,7 +177,7 @@ useEffect(() => {
                 <h2 className="text-3xl font-black text-[#003366] mb-2 flex items-center gap-3">
                   <Library className="w-8 h-8" /> Academic Bookshelf
                 </h2>
-                <p className="text-slate-500 font-medium max-w-md">Find semester-specific textbooks and recommended reading curated for your branch.</p>
+                <p className="text-slate-500 font-medium max-w-md">Find year-specific textbooks and recommended reading curated for your branch.</p>
               </div>
               <div className="flex flex-wrap items-center gap-4 bg-white p-2 rounded-3xl border border-slate-100 shadow-sm">
                 <div className="flex items-center gap-2 p-2 px-4 bg-slate-50 rounded-2xl text-slate-400 font-bold text-xs uppercase tracking-wider">
