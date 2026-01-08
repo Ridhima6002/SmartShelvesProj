@@ -27,6 +27,9 @@ const App: React.FC = () => {
   const [books, setBooks] = useState<Book[]>([]);
   const [loadingBooks, setLoadingBooks] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [pendingBookAction, setPendingBookAction] = useState<Book | null>(null);
+  const [loginPrompt, setLoginPrompt] = useState(false);
+
 
 
   // Subscribe to Firebase auth state and handle admin intent redirect
@@ -103,11 +106,58 @@ const App: React.FC = () => {
       if (p === '/admin') setView('admin');
     }
   }, []);
+//  useEffect(() => {
+//   if (loginPrompt) {
+//     console.log('🔔 Login prompt shown');
+
+//     const t = setTimeout(() => {
+//       console.log('➡️ Login prompt finished → opening auth');
+
+//       setLoginPrompt(false);
+//       setShowAuthModal(true);
+//     }, 2000); // message duration
+
+//     return () => clearTimeout(t);
+//   }
+// }, [loginPrompt]);
+
+
 
 
   const filteredBooks = books.filter(
     (b) => b.year === activeYear && (activeYear === 'FE' ? true : b.branch === activeBranch)
   );
+const handleBookAction = (book: Book) => {
+  console.log('📚 Issue Book clicked:', book.title);
+
+ if (!user) {
+  console.log('❌ User not logged in');
+
+  setSelectedBook(null);
+
+  // show message
+  setLoginPrompt(true);
+
+  return;
+}
+
+
+  console.log('✅ User logged in:', user.name || user.email);
+
+  const userName = user.name || user.email || 'Student';
+
+  if (book.available) {
+    console.log(`📖 Book issued to ${userName}`);
+    alert(`✅ Book issued successfully to ${userName}`);
+  } else {
+    console.log(`⏳ Book not available, waitlist joined`);
+    alert(`📌 Joined waitlist for ${book.title}`);
+  }
+
+  setSelectedBook(null);
+};
+
+
 
 
   const years: Year[] = ['FE', 'SE', 'TE', 'BE'];
@@ -301,14 +351,14 @@ const App: React.FC = () => {
             </section>
           </>
         )}
-{view === 'search' && (
-  <SearchResults
-    query={searchQuery}          // pass the search text
-    books={books}                // pass all books
-    onBack={() => setView('dashboard')}
-    onSelectBook={(book) => setSelectedBook(book)}
-  />
-)}
+        {view === 'search' && (
+          <SearchResults
+            query={searchQuery}          // pass the search text
+            books={books}                // pass all books
+            onBack={() => setView('dashboard')}
+            onSelectBook={(book) => setSelectedBook(book)}
+          />
+        )}
 
         {/* Profile/Student View */}
         {view === 'profile' && user && (
@@ -351,14 +401,79 @@ const App: React.FC = () => {
         <BookDetail
           book={selectedBook}
           onClose={() => setSelectedBook(null)}
-          onAction={(b) => {
-            alert(b.available ? `Successfully issued: ${b.title}` : `Joined waitlist for: ${b.title}`);
-            setSelectedBook(null);
-          }}
+          onAction={handleBookAction}
         />
       )}
 
-      <AuthModal open={showAuthModal} admin={adminIntent} onClose={() => { setShowAuthModal(false); setAdminIntent(false); }} onSuccess={(u) => setUser(u)} />
+
+      <AuthModal
+        open={showAuthModal}
+        admin={adminIntent}
+        onClose={() => {
+          setShowAuthModal(false);
+          setAdminIntent(false);
+          setPendingBookAction(null);
+        }}
+        onSuccess={(u) => {
+          setUser(u);
+          setShowAuthModal(false);
+
+          // IMPORTANT: do NOT auto-issue
+          // User must click "Issue Book" again
+        }}
+      />
+    {loginPrompt && (
+  <div
+    className="fixed inset-0 z-[120] flex items-center justify-center"
+    onKeyDown={(e) => {
+      if (e.key === 'Escape') {
+        setLoginPrompt(false);
+      }
+    }}
+    tabIndex={-1} // REQUIRED for key events
+  >
+    {/* Backdrop */}
+    <div
+      className="absolute inset-0 bg-slate-900/50 backdrop-blur-md"
+      onClick={() => setLoginPrompt(false)} // click outside closes
+    />
+
+    {/* Auth Gate Card */}
+    <div className="relative bg-white max-w-md w-full mx-4 px-8 py-7 rounded-3xl shadow-2xl">
+      {/* Close button */}
+      <button
+        onClick={() => setLoginPrompt(false)}
+        className="absolute top-4 right-4 p-2 rounded-full hover:bg-slate-100 transition"
+        aria-label="Close"
+      >
+        ✕
+      </button>
+
+      <h2 className="text-2xl font-black text-slate-800 text-center">
+        🔐 Login Required
+      </h2>
+
+      <p className="text-slate-500 text-center mt-3 leading-relaxed">
+        Please sign in to issue books, join queues, and manage your library activity.
+      </p>
+
+      <button
+        onClick={() => {
+          setLoginPrompt(false);
+          setShowAuthModal(true);
+        }}
+        className="mt-6 w-full py-3 rounded-2xl bg-[#003366] text-white font-bold hover:scale-[1.02] transition"
+      >
+        Continue to Login
+      </button>
+    </div>
+  </div>
+)}
+
+
+
+
+
 
       <AIChatbot />
 

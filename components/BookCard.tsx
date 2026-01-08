@@ -82,7 +82,7 @@ const BookCard: React.FC<BookCardProps> = ({ book, onClick }) => {
           <div className="mt-3 pt-3 border-t border-slate-100">
             <div className="flex justify-between items-center mb-1">
               <span className="text-[10px] font-bold text-rose-500 uppercase tracking-wider">High Demand</span>
-              <span className="text-[10px] text-slate-400">92% issued</span>
+              {/* <span className="text-[10px] text-slate-400">92% issued</span> */}
             </div>
             <div className="h-1 bg-slate-100 rounded-full overflow-hidden">
               <div className="h-full bg-rose-500 w-[92%]"></div>

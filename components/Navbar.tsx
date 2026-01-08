@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { LOGO } from '../constants';
 import { User } from '../types';
 import { LogOut, User as UserIcon, BookOpen, Search, CreditCard, ChevronDown, Key } from 'lucide-react';
+import { useEffect } from 'react';
 
 interface NavbarProps {
   user: User | null;
@@ -17,7 +18,9 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onAdminLogin, onLogout, 
   const [showDropdown, setShowDropdown] = useState(false);
   const [search, setSearch] = useState('');
 
-
+useEffect(() => {
+  if (!user) setShowDropdown(false);
+}, [user]);
 
 
 
