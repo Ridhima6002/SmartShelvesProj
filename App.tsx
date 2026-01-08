@@ -106,24 +106,6 @@ const App: React.FC = () => {
       if (p === '/admin') setView('admin');
     }
   }, []);
-//  useEffect(() => {
-//   if (loginPrompt) {
-//     console.log('🔔 Login prompt shown');
-
-//     const t = setTimeout(() => {
-//       console.log('➡️ Login prompt finished → opening auth');
-
-//       setLoginPrompt(false);
-//       setShowAuthModal(true);
-//     }, 2000); // message duration
-
-//     return () => clearTimeout(t);
-//   }
-// }, [loginPrompt]);
-
-
-
-
   const filteredBooks = books.filter(
     (b) => b.year === activeYear && (activeYear === 'FE' ? true : b.branch === activeBranch)
   );
@@ -156,13 +138,8 @@ const handleBookAction = (book: Book) => {
 
   setSelectedBook(null);
 };
-
-
-
-
   const years: Year[] = ['FE', 'SE', 'TE', 'BE'];
   const branches: Branch[] = ['CE', 'CSE', 'EXTC'];
-
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-800 pb-24">
       <Navbar
@@ -336,7 +313,7 @@ const handleBookAction = (book: Book) => {
                 </div>
               </div>
 
-              <div className="bg-[#FF9933] p-10 rounded-[3rem] text-white shadow-xl flex flex-col justify-center relative overflow-hidden group">
+              {/* <div className="bg-[#FF9933] p-10 rounded-[3rem] text-white shadow-xl flex flex-col justify-center relative overflow-hidden group">
                 <div className="absolute right-[-10%] bottom-[-10%] p-12 opacity-10 rotate-12 group-hover:scale-110 transition-transform duration-1000">
                   <BrainCircuit className="w-64 h-64" />
                 </div>
@@ -347,7 +324,7 @@ const handleBookAction = (book: Book) => {
                 <button className="w-fit px-10 py-4 bg-white text-[#FF9933] font-black rounded-2xl shadow-xl hover:shadow-white/20 transition-all flex items-center gap-2">
                   Launch AI Chat <Zap className="w-4 h-4" />
                 </button>
-              </div>
+              </div> */}
             </section>
           </>
         )}
