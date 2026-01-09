@@ -10,14 +10,15 @@ interface BookCardProps {
 const BookCard: React.FC<BookCardProps> = ({ book, onClick }) => {
   return (
     <div 
-      onClick={() => onClick(book)}
-      className="group relative w-64 bg-white rounded-xl border border-slate-100 shadow-sm transition-all duration-300 cursor-pointer overflow-hidden hover:-translate-y-1"
-      /* Added a subtle Navy tint to the shadow for depth */
-      style={{ 
-        minHeight: '370px',
-        boxShadow: '0 10px 30px -12px rgba(0, 31, 63, 0.15)' 
-      }}
-    >
+  onClick={() => onClick(book)}
+  className="group relative w-64 bg-[#ebeef5] rounded-xl border border-[#3b82f6]/40 shadow-lg transition-all duration-300 cursor-pointer overflow-hidden hover:-translate-y-1 hover:shadow-2xl"
+  style={{ 
+    minHeight: '370px',
+    /* Bluish shadow instead of navy */
+    boxShadow: '0 10px 30px -12px rgba(59, 130, 246, 0.25)' 
+  }}
+>
+
       {/* Image Container - Reduced Rounding */}
       <div className="h-48 overflow-hidden relative m-1.5 rounded-lg bg-slate-100">
         <img 
@@ -60,7 +61,7 @@ const BookCard: React.FC<BookCardProps> = ({ book, onClick }) => {
             : 'bg-rose-50 text-rose-600 border-rose-100'
           }`}>
             {book.available ? <CheckCircle className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
-            {book.available ? 'Available' : 'Issued'}
+            {book.available ? 'Available' : 'Not Available'}
           </div>
 
           <div className="flex items-center gap-1 text-[#001f3f] font-bold bg-slate-50 px-2 py-0.5 rounded-md text-[10px] border border-slate-100">

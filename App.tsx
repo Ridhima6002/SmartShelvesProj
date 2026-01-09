@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import BookCard from './components/BookCard';
@@ -16,7 +15,7 @@ import { Book, Year, Branch, User } from './types';
 import { onAuthStateChanged, signOut } from './services/firebase';
 import { ChevronRight, Calendar, BookOpen, Library, BrainCircuit, LayoutGrid, Zap, Filter, ArrowLeft, Compass, FileX } from 'lucide-react';
 import { Users } from 'lucide-react'; // Rename the icon import to avoid conflict
-
+import teamLogo from './components/assets/team logo.jpeg';
 const App: React.FC = () => {
   const [view, setView] = useState('dashboard');
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -192,6 +191,8 @@ const App: React.FC = () => {
     pulse?: boolean;
     onClick?: () => void;
   }
+ 
+
 
   const FeatureCard = ({ icon, title, desc, hint, pulse, onClick }: FeatureCardProps) => (
     <div
@@ -320,8 +321,13 @@ const App: React.FC = () => {
     return Math.floor(Math.random() * (3000 - 2500 + 1)) + 2500;
   }, []);
 
+  // ... rest of your imports and logic
+
   return (
-    <div className="min-h-screen bg-blue-100 text-slate-800 pb-24">
+    <div className="min-h-screen bg-[#dae0eb] text-slate-800 pb-24">
+      {/* 1. REMOVE the manual logo block that was here */}
+      
+      {/* 2. Keep only the Navbar here */}
       <Navbar
         user={user}
         onLogin={() => setShowAuthModal(true)}
@@ -340,6 +346,8 @@ const App: React.FC = () => {
           setView('search');
         }}
       />
+
+      
 
       <main
         className={`max-w-7xl mx-auto px-6 pt-20 space-y-6 transition-all duration-500 ease-in-out
@@ -561,8 +569,8 @@ const App: React.FC = () => {
                 <div className="flex flex-col gap-1">
                   <div className="flex items-center gap-2">
                     <span className="flex h-2 w-2 rounded-full bg-orange-500 animate-pulse"></span>
-                    <h3 className="text-sm font-black uppercase tracking-[0.2em] text-[#001f3f]/80">
-                      {activeYear} {activeYear !== 'FE' ? activeBranch : 'General'} Resources
+                    <h3 className=" md:text-2xl font-extrabold text-blue-2000 tracking-tight ">
+                      {activeYear} {activeYear !== 'FE' ? activeBranch : ''} RESOURCES
                     </h3>
                   </div>
                 </div>
@@ -671,11 +679,23 @@ const App: React.FC = () => {
                 <p className="text-slate-500 font-medium">Manage your issues and subscriptions</p>
               </div>
             </div>
-            <StudentDashboard user={user} books={filteredBooks} />
+          <StudentDashboard
+  user={user}
+  books={filteredBooks}
+  onGoToBookBank={() => setView('bookbank')}
+/>
+
+
           </div>
         )}
         {/* Book Bank View */}
-        {view === 'bookbank' && <BookBankData />}
+{view === 'bookbank' && user ? (
+  <BookBankData user={user} />
+) : (
+  <div className="p-16 text-center text-slate-500">
+    Please login to access the Book Bank
+  </div>
+)}
 
 
         {/* Admin Placeholder */}

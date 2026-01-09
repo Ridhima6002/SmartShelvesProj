@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { LOGO } from '../constants';
+// 1. Import your logo file here (adjust path if necessary)
+import teamLogo from './assets/team logo.jpeg'; 
 import { User } from '../types';
 import { LogOut, User as UserIcon, BookOpen, Search, CreditCard, ChevronDown, Key } from 'lucide-react';
 
@@ -17,7 +18,6 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onAdminLogin, onLogout, 
   const [search, setSearch] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // Add scroll listener for a dynamic "lift" effect
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
@@ -33,10 +33,26 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onAdminLogin, onLogout, 
       isScrolled ? 'bg-white/80 backdrop-blur-lg shadow-md' : 'bg-transparent border-b border-slate-200/50'
     }`}>
       
-      {/* Brand Logo */}
-      <div className="cursor-pointer transition-transform hover:scale-105" onClick={() => onNavigate('dashboard')}>
-        {LOGO}
+      {/* --- 🚀 UPDATED BRAND LOGO SECTION --- */}
+      <div 
+        className="flex items-center gap-3 cursor-pointer transition-transform hover:scale-105" 
+        onClick={() => onNavigate('dashboard')}
+      >
+        <img 
+          src={teamLogo} 
+          alt="SmartShelves Logo" 
+          className="w-10 h-10 md:w-12 md:h-12 rounded-xl shadow-lg border border-white/50 object-cover" 
+        />
+        <div className="hidden sm:flex flex-col">
+          <span className="text-xl font-black text-[#001f3f] leading-none">
+            Smart<span className="text-orange-500">Shelves</span>
+          </span>
+          <span className="text-[10px] font-bold text-orange-500 tracking-widest uppercase">
+            SPIT Library
+          </span>
+        </div>
       </div>
+      {/* ------------------------------------ */}
 
       {/* Modernized Search Bar */}
       <div className="hidden md:flex flex-1 justify-center px-10">
@@ -104,11 +120,10 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onAdminLogin, onLogout, 
                   <p className="text-sm font-bold text-slate-800 truncate">{user.email}</p>
                 </div>
                 <div className="space-y-1">
-  {/* Pass the component reference (no brackets) */}
-  <NavItem icon={BookOpen} label="My Library Books" onClick={() => onNavigate('profile')} />
-  <NavItem icon={CreditCard} label="Fine Payments" onClick={() => onNavigate('payments')} />
-  <NavItem icon={UserIcon} label="Account Profile" onClick={() => onNavigate('profile')} />
-</div>
+                  <NavItem icon={BookOpen} label="My Library Books" onClick={() => onNavigate('profile')} />
+                  {/* <NavItem icon={CreditCard} label="Fine Payments" onClick={() => onNavigate('payments')} />
+                  <NavItem icon={UserIcon} label="Account Profile" onClick={() => onNavigate('profile')} /> */}
+                </div>
                 <div className="mt-2 pt-2 border-t border-slate-100">
                   <button
                     onClick={() => { onLogout(); setShowDropdown(false); }}
@@ -126,14 +141,11 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogin, onAdminLogin, onLogout, 
   );
 };
 
-// Sub-component for cleaner dropdown items
-// Updated NavItem to accept the icon component reference
 const NavItem = ({ icon: Icon, label, onClick }: { icon: React.ElementType, label: string, onClick: () => void }) => (
   <button
     onClick={onClick}
     className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50 hover:text-orange-500 rounded-xl transition-all"
   >
-    {/* Render the icon component directly with the desired class */}
     <Icon className="w-4 h-4" />
     {label}
   </button>
