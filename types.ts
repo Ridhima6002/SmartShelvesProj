@@ -9,6 +9,7 @@ export interface Book {
   author: string;
   available: boolean;
   copies: number;
+  queue_position: number;
   //total_copies: number; // ✅ now same everywhere
   demand?: string;
   //tags?: string[];

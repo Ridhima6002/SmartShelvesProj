@@ -1,19 +1,6 @@
 
 import { Book, User, CollectionSchedule, BookBankBundle } from './types';
 
-
-/* Updated SCHEDULES with branch and location properties */
-export const SCHEDULES: CollectionSchedule[] = [
-  { year: 'FE', branch: 'Common', days: ['Wed', 'Fri'], time: '10 AM – 12 PM', location: 'Main Library Counter 1' },
-  { year: 'SE', branch: 'CSE', days: ['Mon', 'Thu'], time: '2 PM – 4 PM', location: 'CS Dept Library' },
-  { year: 'SE', branch: 'CE', days: ['Mon', 'Thu'], time: '2 PM – 4 PM', location: 'CE Dept Library' },
-  { year: 'SE', branch: 'EXTC', days: ['Mon', 'Thu'], time: '2 PM – 4 PM', location: 'EXTC Dept Library' },
-  { year: 'TE', branch: 'CSE', days: ['Tue', 'Fri'], time: '1 PM – 3 PM', location: 'Main Library Counter 2' },
-  { year: 'TE', branch: 'EXTC', days: ['Tue', 'Fri'], time: '1 PM – 3 PM', location: 'Main Library Counter 3' },
-  { year: 'BE', branch: 'CSE', days: ['Wed', 'Sat'], time: '11 AM – 1 PM', location: 'Main Library Counter 2' },
-  { year: 'BE', branch: 'EXTC', days: ['Wed', 'Sat'], time: '11 AM – 1 PM', location: 'Main Library Counter 3' },
-];
-
 export const RACK_INFO = [
   { id: 1, category: 'Mathematics & Basic Science' },
   { id: 2, category: 'Communication Skills & Ethics' },
@@ -35,47 +22,4 @@ export const RACK_INFO = [
   { id: 18, category: 'Biographies' },
   { id: 19, category: 'Magazines & Periodicals' },
   { id: 20, category: 'New Arrivals' },
-];
-
-/* Added MOCK_BOOK_BANK_BUNDLES to resolve member error in BookBankFlow.tsx */
-export const MOCK_BOOK_BANK_BUNDLES: BookBankBundle[] = [
-  {
-    id: 'bundle_fe_1',
-    year: 'FE',
-    branch: 'Common',
-    semester: 1,
-    books: [
-      { title: 'Engineering Mathematics I', author: 'Grewal', subject: 'Mathematics' },
-      { title: 'Engineering Physics', author: 'Avadhanulu', subject: 'Physics' },
-      { title: 'Applied Chemistry', author: 'Jain', subject: 'Chemistry' }
-    ],
-    price: 850,
-    originalPrice: 4250
-  },
-  {
-    id: 'bundle_se_cse_3',
-    year: 'SE',
-    branch: 'CSE',
-    semester: 3,
-    books: [
-      { title: 'Data Structures', author: 'Cormen', subject: 'Core CS' },
-      { title: 'Discrete Mathematics', author: 'Rosen', subject: 'Math' },
-      { title: 'Digital Electronics', author: 'Mano', subject: 'Hardware' }
-    ],
-    price: 1200,
-    originalPrice: 6000
-  },
-  {
-    id: 'bundle_se_extc_3',
-    year: 'SE',
-    branch: 'EXTC',
-    semester: 3,
-    books: [
-      { title: 'Electronic Devices', author: 'Boylestad', subject: 'Core EXTC' },
-      { title: 'Network Theory', author: 'Valckenburg', subject: 'Circuits' },
-      { title: 'Signals and Systems', author: 'Oppenheim', subject: 'Theory' }
-    ],
-    price: 1150,
-    originalPrice: 5750
-  }
 ];

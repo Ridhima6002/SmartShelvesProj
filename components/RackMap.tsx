@@ -58,7 +58,7 @@ const RackMap: React.FC = () => {
         ))}
       </div>
 
-      <div className="p-6 bg-slate-50 rounded-[2rem] border border-slate-100 flex flex-col md:flex-row items-center justify-between gap-6">
+      {/* <div className="p-6 bg-slate-50 rounded-[2rem] border border-slate-100 flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center text-[#003366]">
             <MousePointer2 className="w-6 h-6" />
@@ -73,7 +73,7 @@ const RackMap: React.FC = () => {
           <span className="px-4 py-2 bg-white text-xs font-bold text-slate-600 rounded-xl border border-slate-200">CS/IT: Rack 4-6</span>
           <span className="px-4 py-2 bg-white text-xs font-bold text-slate-600 rounded-xl border border-slate-200">Entrance: Rack 1</span>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Book } from '../types';
-import { Book as BookIcon, User as AuthorIcon, Hash, CheckCircle, XCircle, TrendingUp, Star } from 'lucide-react';
+import { User as AuthorIcon, Hash, CheckCircle, XCircle, ArrowUpRight } from 'lucide-react';
 
 interface BookCardProps {
   book: Book;
@@ -11,81 +11,75 @@ const BookCard: React.FC<BookCardProps> = ({ book, onClick }) => {
   return (
     <div 
       onClick={() => onClick(book)}
-      className="group relative w-64 bg-white rounded-2xl border border-slate-100 shadow-md hover:shadow-xl hover:-translate-y-2 transition-transform duration-300 cursor-pointer overflow-hidden"
-      style={{ minHeight: '380px' }}
+      className="group relative w-64 bg-white rounded-xl border border-slate-100 shadow-sm transition-all duration-300 cursor-pointer overflow-hidden hover:-translate-y-1"
+      /* Added a subtle Navy tint to the shadow for depth */
+      style={{ 
+        minHeight: '370px',
+        boxShadow: '0 10px 30px -12px rgba(0, 31, 63, 0.15)' 
+      }}
     >
-      {/* Image */}
-      <div className="h-56 overflow-hidden relative">
+      {/* Image Container - Reduced Rounding */}
+      <div className="h-48 overflow-hidden relative m-1.5 rounded-lg bg-slate-100">
         <img 
           src={book.image} 
           alt={book.title} 
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
 
-        {/* Top Right Course Code */}
-        <div className="absolute top-2 right-2 px-2 py-1 rounded-full bg-white/80 backdrop-blur-sm">
-          <p className="text-[10px] font-mono font-bold text-slate-900 tracking-wider">
-            {book.course_code || 'CODE-001'}
+        {/* Floating Course Code - Navy Theme */}
+        <div className="absolute top-2 right-2 px-2.5 py-1 rounded-md bg-[#001f3f]/90 backdrop-blur-md border border-white/10">
+          <p className="text-[9px] font-bold text-[#FF9933] tracking-wider uppercase">
+            {book.course_code || 'CS-202'}
           </p>
         </div>
 
-        {/* Badges */}
-        <div className="absolute top-2 left-2 flex flex-col gap-1">
-          {book.tags?.includes('Most Borrowed') && (
-            <span className="bg-orange-500 text-white text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1 shadow-md">
-              <TrendingUp className="w-3 h-3" /> Popular
-            </span>
-          )}
-          {book.tags?.includes('Recommended') && (
-            <span className="bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1 shadow-md">
-              <Star className="w-3 h-3" /> Recommended
-            </span>
-          )}
-        </div>
-
-        {/* Hover button */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-          <button className="w-full py-2 bg-white/20 backdrop-blur-md text-white rounded-lg text-xs font-bold border border-white/30 hover:bg-white/30 transition-colors">
-            View Details
-          </button>
+        {/* Clean Hover Overlay */}
+        <div className="absolute inset-0 bg-[#001f3f]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+           <div className="bg-white text-[#001f3f] p-2 rounded-lg shadow-lg transform scale-90 group-hover:scale-100 transition-transform">
+             <ArrowUpRight className="w-4 h-4" />
+           </div>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="p-5 flex flex-col justify-between h-[170px]">
-        {/* Title & Author */}
-        <div>
-          <h3 className="text-sm font-bold text-slate-800 line-clamp-2 leading-snug group-hover:text-[#003366] transition-colors">
+      {/* Content Area - Compact Spacing */}
+      <div className="p-4 flex flex-col justify-between h-[170px]">
+        <div className="space-y-1.5">
+          <h3 className="text-sm font-bold text-[#001f3f] line-clamp-2 leading-tight group-hover:text-[#FF9933] transition-colors">
             {book.title}
           </h3>
-          <p className="text-xs text-slate-500 mt-1 flex items-center gap-1">
-            <AuthorIcon className="w-3 h-3" /> {book.author}
+          <p className="text-[11px] text-slate-500 flex items-center gap-1.5">
+            <AuthorIcon className="w-3 h-3 text-[#FF9933]" /> {book.author}
           </p>
         </div>
 
-        {/* Availability & Rack */}
-        <div className="mt-4 flex items-center justify-between">
-          <div className="flex items-center gap-1.5">
-            {book.available ? (
-              <CheckCircle className="w-4 h-4 text-emerald-500" />
-            ) : (
-              <XCircle className="w-4 h-4 text-rose-500" />
-            )}
+        {/* Bottom Metadata Row */}
+        <div className="flex items-center justify-between pt-2">
+          <div className={`flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold border ${
+            book.available 
+            ? 'bg-emerald-50 text-emerald-600 border-emerald-100' 
+            : 'bg-rose-50 text-rose-600 border-rose-100'
+          }`}>
+            {book.available ? <CheckCircle className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
+            {book.available ? 'Available' : 'Issued'}
           </div>
-          <div className="flex items-center gap-1 text-slate-400 bg-slate-50 px-2 py-1 rounded-md text-[10px]">
-            <Hash className="w-3 h-3" /> Rack {book.rack}
+
+          <div className="flex items-center gap-1 text-[#001f3f] font-bold bg-slate-50 px-2 py-0.5 rounded-md text-[10px] border border-slate-100">
+            <Hash className="w-2.5 h-2.5 text-[#FF9933]" /> RACK {book.rack}
           </div>
         </div>
 
-        {/* High demand */}
+        {/* High Demand Logic */}
         {book.demand === 'High' && (
-          <div className="mt-3 pt-3 border-t border-slate-100">
+          <div className="mt-3 pt-3 border-t border-slate-50">
             <div className="flex justify-between items-center mb-1">
-              <span className="text-[10px] font-bold text-rose-500 uppercase tracking-wider">High Demand</span>
-              {/* <span className="text-[10px] text-slate-400">92% issued</span> */}
+              <span className="text-[9px] font-bold text-[#FF9933] uppercase">High Demand</span>
+              <span className="text-[9px] font-medium text-[#001f3f]/40">92%</span>
             </div>
             <div className="h-1 bg-slate-100 rounded-full overflow-hidden">
-              <div className="h-full bg-rose-500 w-[92%]"></div>
+              <div 
+                className="h-full bg-gradient-to-r from-[#FF9933] to-orange-600 rounded-full"
+                style={{ width: '92%' }}
+              ></div>
             </div>
           </div>
         )}

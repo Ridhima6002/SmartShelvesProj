@@ -74,7 +74,7 @@ const BookDetail: React.FC<BookDetailProps> = ({ book, onClose, onAction }) => {
                     </span>
                   </div>
                   <p className="text-sm text-rose-600 mt-1">
-                    You are <span className="font-bold">#{book.queuePosition || 1}</span> in the queue.
+                    You are <span className="font-bold">#{book.queue_position || 1}</span> in the queue.
                   </p>
                 </div>
               </div>

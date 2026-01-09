@@ -32,9 +32,9 @@ const AIChatbot: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-[200]">
+    <div className="fixed bottom-6 right-6 z-[999] isolate">
       {isOpen ? (
-        <div className="w-96 h-[550px] bg-white rounded-3xl shadow-2xl border border-slate-100 flex flex-col overflow-hidden animate-in slide-in-from-bottom-12 duration-300">
+        <div className="w-[90vw] max-w-md h-[70vh] sm:h-[550px] bg-white rounded-3xl shadow-2xl border border-slate-100 flex flex-col overflow-hidden animate-in slide-in-from-bottom-12 duration-300">
           <div className="p-4 bg-[#003366] text-white flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-white/20 rounded-2xl flex items-center justify-center">
@@ -101,12 +101,28 @@ const AIChatbot: React.FC = () => {
         </div>
       ) : (
         <button 
-          onClick={() => setIsOpen(true)}
-          className="w-16 h-16 bg-[#003366] text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-90 transition-all group overflow-hidden"
-        >
-          <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-          <MessageSquare className="w-7 h-7" />
-        </button>
+  onClick={() => setIsOpen(true)}
+  className="
+    w-16 h-16
+    bg-[#003366] 
+    text-white 
+    rounded-full 
+    flex items-center justify-center 
+    shadow-2xl 
+    hover:scale-110 active:scale-90 
+    transition-all 
+    group 
+    overflow-hidden 
+    relative
+  "
+>
+  {/* Moving shine effect */}
+  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent 
+                  translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+
+  <MessageSquare className="w-7 h-7 relative z-10" />
+</button>
+
       )}
     </div>
   );
