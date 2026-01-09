@@ -83,6 +83,7 @@ Copies available: ${book.copies}
       } else {
         context = `
 No book match found for '${userQuery}'.
+don't introduce yourself if not asked.
 If this is an academic question, answer it professionally as a subject expert.
 If this is not library-related or academic, politely say:
 "I can help you with library-related queries and academic doubts."
