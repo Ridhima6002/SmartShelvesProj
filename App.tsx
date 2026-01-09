@@ -14,7 +14,7 @@ import BookBankData from './components/BookBankData'
 import { RACK_INFO } from './data';
 import { Book, Year, Branch, User } from './types';
 import { onAuthStateChanged, signOut } from './services/firebase';
-import { ChevronRight, Calendar, BookOpen, Library, BrainCircuit, LayoutGrid, Zap, Filter, ArrowLeft,Compass,FileX } from 'lucide-react';
+import { ChevronRight, Calendar, BookOpen, Library, BrainCircuit, LayoutGrid, Zap, Filter, ArrowLeft, Compass, FileX } from 'lucide-react';
 import { Users } from 'lucide-react'; // Rename the icon import to avoid conflict
 
 const App: React.FC = () => {
@@ -31,52 +31,52 @@ const App: React.FC = () => {
   const [pendingBookAction, setPendingBookAction] = useState<Book | null>(null);
   const [loginPrompt, setLoginPrompt] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
-const [count, setCount] = useState(2410);
-const [hasStarted, setHasStarted] = useState(false);
-const statsRef = React.useRef<HTMLDivElement>(null);
+  const [count, setCount] = useState(2410);
+  const [hasStarted, setHasStarted] = useState(false);
+  const statsRef = React.useRef<HTMLDivElement>(null);
 
-const targetCount = React.useMemo(() => Math.floor(Math.random() * (3000 - 2500 + 1)) + 2500, []);
+  const targetCount = React.useMemo(() => Math.floor(Math.random() * (3000 - 2500 + 1)) + 2500, []);
 
-useEffect(() => {
-  const observer = new IntersectionObserver(
-    ([entry]) => {
-      if (entry.isIntersecting) {
-  setHasStarted(true);
-} else {
-  setHasStarted(false); // <--- This resets it when you scroll away
-  setCount(2410);       // <--- This resets the number
-}
-    },
-    { threshold: 0.2 } // Trigger slightly earlier for a smoother feel
-  );
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setHasStarted(true);
+        } else {
+          setHasStarted(false); // <--- This resets it when you scroll away
+          setCount(2410);       // <--- This resets the number
+        }
+      },
+      { threshold: 0.2 } // Trigger slightly earlier for a smoother feel
+    );
 
-  if (statsRef.current) observer.observe(statsRef.current);
-  return () => observer.disconnect();
-}, []);
+    if (statsRef.current) observer.observe(statsRef.current);
+    return () => observer.disconnect();
+  }, []);
 
-useEffect(() => {
-  if (!hasStarted) return;
+  useEffect(() => {
+    if (!hasStarted) return;
 
-  const duration = 1500; 
-  const frameDuration = 1000 / 60;
-  const totalFrames = Math.round(duration / frameDuration);
-  let frame = 0;
+    const duration = 1500;
+    const frameDuration = 1000 / 60;
+    const totalFrames = Math.round(duration / frameDuration);
+    let frame = 0;
 
-  const timer = setInterval(() => {
-    frame++;
-    const progress = 1 - Math.pow(1 - frame / totalFrames, 2);
-    const currentCount = Math.floor(2410 + (targetCount - 2410) * progress);
+    const timer = setInterval(() => {
+      frame++;
+      const progress = 1 - Math.pow(1 - frame / totalFrames, 2);
+      const currentCount = Math.floor(2410 + (targetCount - 2410) * progress);
 
-    if (frame <= totalFrames) {
-      setCount(currentCount);
-    } else {
-      setCount(targetCount);
-      clearInterval(timer);
-    }
-  }, frameDuration);
+      if (frame <= totalFrames) {
+        setCount(currentCount);
+      } else {
+        setCount(targetCount);
+        clearInterval(timer);
+      }
+    }, frameDuration);
 
-  return () => clearInterval(timer);
-}, [hasStarted, targetCount]);
+    return () => clearInterval(timer);
+  }, [hasStarted, targetCount]);
 
 
   // Subscribe to Firebase auth state and handle admin intent redirect
@@ -321,7 +321,7 @@ useEffect(() => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-800 pb-24">
+    <div className="min-h-screen bg-blue-100 text-slate-800 pb-24">
       <Navbar
         user={user}
         onLogin={() => setShowAuthModal(true)}
@@ -342,7 +342,7 @@ useEffect(() => {
       />
 
       <main
-        className={`max-w-7xl mx-auto px-6 pt-20 space-y-12 transition-all duration-500 ease-in-out
+        className={`max-w-7xl mx-auto px-6 pt-20 space-y-6 transition-all duration-500 ease-in-out
       ${isNavigating ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'}
     `}
       >
@@ -394,12 +394,12 @@ useEffect(() => {
                   {/* CTA BUTTONS */}
                   <div className="flex flex-col sm:flex-row gap-4 justify-center xl:justify-start">
                     <button
-  onClick={() => document.getElementById('stats')?.scrollIntoView({ behavior: 'smooth' })}
-  className="group flex items-center gap-3 rounded-2xl bg-gradient-to-r from-orange-600 via-orange-500 to-orange-600 hover:bg-orange-600 px-8 py-4 font-bold text-[#001f3f] shadow-xl shadow-orange-950/20 hover:scale-105 transition-all"
->
-  Explore Library
-  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-</button>
+                      onClick={() => document.getElementById('stats')?.scrollIntoView({ behavior: 'smooth' })}
+                      className="group flex items-center gap-3 rounded-2xl bg-gradient-to-r from-orange-600 via-orange-500 to-orange-600 hover:bg-orange-600 px-8 py-4 font-bold text-[#001f3f] shadow-xl shadow-orange-950/20 hover:scale-105 transition-all"
+                    >
+                      Explore Library
+                      <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </button>
                   </div>
                 </div>
 
@@ -448,45 +448,43 @@ useEffect(() => {
                 </div>
               </div>
             </section>
-           {/* Floating Stats Bridge */}
-<div id="stats" className="relative z-20 -mt-10 max-w-5xl mx-auto px-6 scroll-mt-32">
-  <div 
-    ref={statsRef}
-    className={`grid grid-cols-2 md:grid-cols-4 gap-4 bg-white/80 backdrop-blur-xl p-4 rounded-[2.5rem] border border-white shadow-xl shadow-blue-900/5 transition-all duration-700 ${
-      hasStarted ? 'opacity-100 scale-100' : 'opacity-50 scale-95'
-    }`}
->
-  {[
-    { label: 'Books Available', value: '12,400+', icon: <BookOpen className="w-4 h-4" /> },
-    { 
-      label: 'Active Members', 
-      value: `${count.toLocaleString()}+`, 
-      icon: <Users className="w-4 h-4" /> 
-    },
-    { label: 'Digital Access', value: '24/7', icon: <Zap className="w-4 h-4" /> },
-    { label: 'Study Racks', value: '45', icon: <LayoutGrid className="w-4 h-4" /> },
-  ].map((stat, i) => (
-    <div key={i} className="flex flex-col items-center justify-center py-2 border-r last:border-0 border-slate-100">
-      <div className="flex items-center gap-2">
-        <div className={`text-orange-500 font-black text-2xl tabular-nums tracking-tighter transition-all duration-300 ${
-          hasStarted && stat.label === 'Active Members' ? 'brightness-110' : ''
-        }`}>
-          {stat.value}
-        </div>
-        
-        {stat.label === 'Active Members' && (
-          <span className={`relative flex h-2 w-2 transition-opacity duration-500 ${hasStarted ? 'opacity-100' : 'opacity-0'}`}>
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-          </span>
-        )}
-      </div>
-      <div className="text-[10px] uppercase tracking-widest text-slate-400 font-bold flex items-center gap-1 text-center mt-1">
-        {stat.icon} {stat.label}
-      </div>
-    </div>
-  ))}
-</div>
+            {/* Floating Stats Bridge */}
+            <div id="stats" className="relative z-20 -mt-10 max-w-5xl mx-auto px-6 scroll-mt-32">
+              <div
+                ref={statsRef}
+                className={`grid grid-cols-2 md:grid-cols-4 gap-4 bg-white/80 backdrop-blur-xl p-4 rounded-[2.5rem] border border-white shadow-xl shadow-blue-900/5 transition-all duration-700 ${hasStarted ? 'opacity-100 scale-100' : 'opacity-50 scale-95'
+                  }`}
+              >
+                {[
+                  { label: 'Books Available', value: '12,400+', icon: <BookOpen className="w-4 h-4" /> },
+                  {
+                    label: 'Active Members',
+                    value: `${count.toLocaleString()}+`,
+                    icon: <Users className="w-4 h-4" />
+                  },
+                  { label: 'Digital Access', value: '24/7', icon: <Zap className="w-4 h-4" /> },
+                  { label: 'Study Racks', value: '45', icon: <LayoutGrid className="w-4 h-4" /> },
+                ].map((stat, i) => (
+                  <div key={i} className="flex flex-col items-center justify-center py-2 border-r last:border-0 border-slate-100">
+                    <div className="flex items-center gap-2">
+                      <div className={`text-orange-500 font-black text-2xl tabular-nums tracking-tighter transition-all duration-300 ${hasStarted && stat.label === 'Active Members' ? 'brightness-110' : ''
+                        }`}>
+                        {stat.value}
+                      </div>
+
+                      {stat.label === 'Active Members' && (
+                        <span className={`relative flex h-2 w-2 transition-opacity duration-500 ${hasStarted ? 'opacity-100' : 'opacity-0'}`}>
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-[10px] uppercase tracking-widest text-slate-400 font-bold flex items-center gap-1 text-center mt-1">
+                      {stat.icon} {stat.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
 
@@ -494,113 +492,117 @@ useEffect(() => {
 
             {/* Main Library Controls */}
             {/* <section className="flex flex-col md:flex-row md:items-end justify-between gap-6"> */}
-           {/* Reduced padding from py-20 to py-8 and minimized top margin */}
-<section id="bookshelf" className="py-4 mt-2 scroll-mt-28">
-  <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-    
-    {/* Left Side: Modern Typography with tighter spacing */}
-    <div className="relative">
-      <div className="absolute -left-6 -top-6 w-24 h-24 bg-orange-500/5 blur-[40px] rounded-full" />
-      
-      <div className="flex items-center gap-3 mb-2">
-        <div className="h-8 w-1.5 bg-gradient-to-b from-[#FF9933] to-orange-200 rounded-full" />
-        <h2 className="text-4xl font-black text-[#001f3f] tracking-tight">
-          Academic <span className="text-[#FF9933]">Bookshelf</span>
-        </h2>
-      </div>
-      <p className="text-slate-500 text-sm font-medium max-w-md ml-4 leading-snug">
-        Premium resources and branch-specific textbooks for the modern engineer.
-      </p>
-    </div>
+            {/* Reduced padding from py-20 to py-8 and minimized top margin */}
+            <section id="bookshelf" className="py-2  scroll-mt-28">
+              <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
 
-    {/* Right Side: Compact Floating Glass Filters */}
-    <div className="flex flex-col sm:flex-row items-center gap-3">
-      
-      {/* Year Selector: Slimmer Padding */}
-      <div className="flex p-1 bg-slate-100/80 backdrop-blur-md rounded-2xl border border-slate-200 shadow-sm">
-        {years.map(y => (
-          <button
-            key={y}
-            onClick={() => setActiveYear(y)}
-            className={`px-5 py-1.5 rounded-xl font-bold text-xs transition-all duration-300 ${
-              activeYear === y
-                ? 'bg-[#001f3f] text-white shadow-md scale-105'
-                : 'text-slate-400 hover:text-[#001f3f]'
-            }`}
-          >
-            {y}
-          </button>
-        ))}
-      </div>
+                {/* Left Side: Modern Typography with tighter spacing */}
+                <div className="relative">
+                  <div className="absolute -left-6 -top-6 w-24 h-24 bg-orange-500/5 blur-[40px] rounded-full" />
 
-      {/* Branch Selector: Slimmer Padding */}
-      {activeYear !== 'FE' && (
-        <div className="flex p-1 bg-orange-50/50 backdrop-blur-md rounded-2xl border border-orange-100 animate-in zoom-in-95">
-          {branches.map(b => (
-            <button
-              key={b}
-              onClick={() => setActiveBranch(b)}
-              className={`px-5 py-1.5 rounded-xl font-bold text-xs transition-all duration-300 ${
-                activeBranch === b
-                  ? 'bg-[#FF9933] text-white shadow-sm'
-                  : 'text-[#FF9933]/60 hover:text-[#FF9933]'
-              }`}
-            >
-              {b}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  </div>
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="h-8 w-1.5 bg-gradient-to-b from-[#FF9933] to-orange-200 rounded-full" />
+                    <h2 className="text-4xl font-black text-[#001f3f] tracking-tight">
+                      Academic <span className="text-[#FF9933]">Bookshelf</span>
+                    </h2>
+                  </div>
+                  <p className="text-slate-500 text-sm font-medium max-w-md ml-4 leading-snug">
+                    Premium resources and branch-specific textbooks for the modern engineer.
+                  </p>
+                </div>
 
-  {/* Thin, subtle divider with reduced top margin */}
-  <div className="mt-6 h-px w-full bg-gradient-to-r from-transparent via-slate-200/60 to-transparent" />
-</section>
+                {/* Right Side: Compact Floating Glass Filters */}
+                <div className="flex flex-col sm:flex-row items-center gap-3">
+
+                  {/* Year Selector: Slimmer Padding */}
+                  <div className="flex p-1 bg-slate-100/80 backdrop-blur-md rounded-2xl border border-slate-200 shadow-sm">
+                    {years.map(y => (
+                      <button
+                        key={y}
+                        onClick={() => setActiveYear(y)}
+                        className={`px-5 py-1.5 rounded-xl font-bold text-xs transition-all duration-300 ${activeYear === y
+                            ? 'bg-[#001f3f] text-white shadow-md scale-105'
+                            : 'text-slate-400 hover:text-[#001f3f]'
+                          }`}
+                      >
+                        {y}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Branch Selector: Slimmer Padding */}
+                  {activeYear !== 'FE' && (
+                    <div className="flex p-1 bg-orange-50/50 backdrop-blur-md rounded-2xl border border-orange-100 animate-in zoom-in-95">
+                      {branches.map(b => (
+                        <button
+                          key={b}
+                          onClick={() => setActiveBranch(b)}
+                          className={`px-5 py-1.5 rounded-xl font-bold text-xs transition-all duration-300 ${activeBranch === b
+                              ? 'bg-[#FF9933] text-white shadow-sm'
+                              : 'text-[#FF9933]/60 hover:text-[#FF9933]'
+                            }`}
+                        >
+                          {b}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Thin, subtle divider with reduced top margin */}
+              <div className=" h-px w-full bg-gradient-to-r from-transparent via-slate-200/60 to-transparent" />
+            </section>
 
             {/* Book Sliders */}
-           <section className="space-y-4">
-  <div className="flex items-center justify-between border-b border-slate-100 pb-5">
-    <div className="flex items-center gap-5">
-      {/* Premium Navigation Icon */}
+            <section className="space-y-0">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-5">
+                {/* Dynamic Label - Added this part */}
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-2">
+                    <span className="flex h-2 w-2 rounded-full bg-orange-500 animate-pulse"></span>
+                    <h3 className="text-sm font-black uppercase tracking-[0.2em] text-[#001f3f]/80">
+                      {activeYear} {activeYear !== 'FE' ? activeBranch : 'General'} Resources
+                    </h3>
+                  </div>
+                </div>
 
-      
-    </div>
-  </div>
+                {/* Optional: Add a "Clear Filters" or "View All" if needed */}
+              </div>
 
-  <div className="flex gap-6 overflow-x-auto pb-8 pt-4 scrollbar-hide snap-x">
-    {loadingBooks ? (
-      <div className="w-full h-48 flex flex-col items-center justify-center text-slate-400 gap-3">
-        <div className="w-10 h-10 border-[3px] border-[#001f3f]/5 border-t-[#001f3f] rounded-full animate-spin" />
-        <p className="font-bold text-[10px] uppercase tracking-[0.2em] text-[#001f3f]/40">Syncing Database...</p>
-      </div>
-    ) : filteredBooks.length > 0 ? (
-      filteredBooks.map((book) => (
-        <div key={book.id} className="snap-center">
-          <BookCard book={book} onClick={(b) => setSelectedBook(b)} />
-        </div>
-      ))
-    ) : (
-      /* Using FileX which is a valid Lucide icon */
-      <div className="w-full h-56 bg-slate-50/50 rounded-3xl border border-dashed border-slate-200 flex flex-col items-center justify-center text-slate-400">
-        <div className="p-5 bg-white rounded-2xl shadow-sm mb-4 border border-slate-100">
-          <FileX className="w-8 h-8 opacity-20 text-[#001f3f]" />
-        </div>
-        <p className="font-black text-[#001f3f]/30 uppercase text-[10px] tracking-[0.3em]">No Resources Indexed</p>
-      </div>
-    )}
-  </div>
-</section>
+              <div className="flex gap-6 overflow-x-auto pb-4 pt-2 scrollbar-hide snap-x">
+                {loadingBooks ? (
+                  <div className="w-full h-48 flex flex-col items-center justify-center text-slate-400 gap-3">
+                    <div className="w-10 h-10 border-[3px] border-[#001f3f]/5 border-t-[#001f3f] rounded-full animate-spin" />
+                    <p className="font-bold text-[10px] uppercase tracking-[0.2em] text-[#001f3f]/40">Syncing Database...</p>
+                  </div>
+                ) : filteredBooks.length > 0 ? (
+                  filteredBooks.map((book) => (
+                    <div key={book.id} className="snap-center">
+                      <BookCard book={book} onClick={(b) => setSelectedBook(b)} />
+                    </div>
+                  ))
+                ) : (
+                  /* Using FileX which is a valid Lucide icon */
+                  <div className="w-full h-56 bg-slate-50/50 rounded-3xl border border-dashed border-slate-200 flex flex-col items-center justify-center text-slate-400">
+                    <div className="p-5 bg-white rounded-2xl shadow-sm mb-4 border border-slate-100">
+                      <FileX className="w-8 h-8 opacity-20 text-[#001f3f]" />
+                    </div>
+                    <p className="font-black text-[#001f3f]/30 uppercase text-[10px] tracking-[0.3em]">No Resources Indexed</p>
+                  </div>
+                )}
+              </div>
+            </section>
 
             {/* Library Rack Navigation */}
-<section id="floorplan" className="scroll-mt-28 relative group">
-  {/* Blue Glow Effect */}
-  <div className="absolute -inset-4 bg-blue-500/5 blur-[50px] rounded-[3rem] -z-10 transition-opacity group-hover:bg-blue-500/10" />
-  
-  <div className="relative bg-white/50 backdrop-blur-sm rounded-[2.5rem] border border-blue-100/50 shadow-[0_20px_50px_rgba(0,51,102,0.05)] overflow-hidden">
-    <RackMap />
-  </div>
-</section>
+            <section id="floorplan" className="scroll-mt-28 relative group">
+              {/* Blue Glow Effect */}
+              <div className="absolute -inset-4 bg-blue-500/5 blur-[50px] rounded-[3rem] -z-10 transition-opacity group-hover:bg-blue-500/10" />
+
+              <div className="relative bg-white/50 backdrop-blur-sm rounded-[2.5rem] border border-blue-100/50 shadow-[0_20px_50px_rgba(0,51,102,0.05)] overflow-hidden">
+                <RackMap />
+              </div>
+            </section>
 
             <section id="bookbank" className="relative w-full min-h-[500px] overflow-hidden rounded-[2rem] bg-[#001a33] flex items-center">
               {/* Background Image with Overlay */}
