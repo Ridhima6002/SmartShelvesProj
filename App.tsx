@@ -593,9 +593,14 @@ useEffect(() => {
 </section>
 
             {/* Library Rack Navigation */}
-            <section id="floorplan" className="scroll-mt-28">
-              <RackMap />
-            </section>
+<section id="floorplan" className="scroll-mt-28 relative group">
+  {/* Blue Glow Effect */}
+  <div className="absolute -inset-4 bg-blue-500/5 blur-[50px] rounded-[3rem] -z-10 transition-opacity group-hover:bg-blue-500/10" />
+  
+  <div className="relative bg-white/50 backdrop-blur-sm rounded-[2.5rem] border border-blue-100/50 shadow-[0_20px_50px_rgba(0,51,102,0.05)] overflow-hidden">
+    <RackMap />
+  </div>
+</section>
 
             <section id="bookbank" className="relative w-full min-h-[500px] overflow-hidden rounded-[2rem] bg-[#001a33] flex items-center">
               {/* Background Image with Overlay */}
