@@ -236,6 +236,13 @@ const filteredBooks = books.filter((b) => {
                         </div>
                         <h3 className="text-xl font-black text-slate-800 leading-tight">{book.title}</h3>
                         <p className="text-sm text-slate-500 mt-2 italic">by {book.author}</p>
+                        <button
+  onClick={() => setShowPaymentModal(true)}
+  className="mt-4 w-full bg-orange-500 text-white py-3 rounded-2xl font-bold text-sm uppercase tracking-widest hover:bg-orange-600 transition-all active:scale-95"
+>
+  Purchase Now
+</button>
+
                       </div>
                     ))
                   )}
