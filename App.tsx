@@ -648,9 +648,9 @@ const App: React.FC = () => {
                     Enroll Now
                   </button>
 
-                  <button className="px-8 py-3 font-semibold text-white transition bg-white/10 backdrop-blur-md border border-white/20 rounded-xl hover:bg-white/20">
+                  {/* <button className="px-8 py-3 font-semibold text-white transition bg-white/10 backdrop-blur-md border border-white/20 rounded-xl hover:bg-white/20">
                     Learn More
-                  </button>
+                  </button> */}
                 </div>
               </div>
             </section>
