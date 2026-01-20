@@ -1,7 +1,7 @@
 // src/BookBankData.tsx
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "../services/supabase";
-import {User, Book, Year, Branch } from "../types";
+import { User, Book, Year, Branch } from "../types";
 import {
   ChevronRight,
   Clock,
@@ -41,7 +41,7 @@ const collectionData = {
 };
 interface BookBankDataProps {
   user: User;
- 
+
 }
 const BookBankData: React.FC<BookBankDataProps> = ({ user }) => {
 
@@ -52,50 +52,23 @@ const BookBankData: React.FC<BookBankDataProps> = ({ user }) => {
   const [activeBranch, setActiveBranch] = useState<Branch | null>(null);
   // const [year, setYear] = useState<keyof typeof collectionData>("FE");
   // const [branch, setBranch] = useState<"CSE" | "EXTC" | "CE">("CSE");
+  const [selectedBooks, setSelectedBooks] = useState<Book[]>([]);
+  const totalPrice = selectedBooks.reduce((sum, b) => sum + b.price, 0);
+  const [purchasedBookIds, setPurchasedBookIds] = useState<string[]>([]);
+  const [hasPaid, setHasPaid] = useState(false);
+
+
 
   const scheduleYear = activeYear;
-const scheduleBranch = activeYear === "FE" ? "CSE" : activeBranch;
+  const scheduleBranch = activeYear === "FE" ? "CSE" : activeBranch;
 
-const { window, location } =
-  scheduleBranch
-    ? collectionData[scheduleYear][scheduleBranch]
-    : { window: "", location: "" };
+  const { window, location } =
+    scheduleBranch
+      ? collectionData[scheduleYear][scheduleBranch]
+      : { window: "", location: "" };
 
- const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [fineAmount, setFineAmount] = useState<number>(0);
-  const [loadingFines, setLoadingFines] = useState(true);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
-  const fetchFines = async () => {
-    const { data, error } = await supabase
-      .from('students')
-      .select('fines')
-      .eq('email', user.email)
-      .single();
-
-    if (error) {
-      console.error('Error fetching fines:', error);
-    } else {
-      setFineAmount(data?.fines ?? 0);
-    }
-    setLoadingFines(false);
-  };
-
-  useEffect(() => {
-    fetchFines();
-  }, [user.email]);
-
-  const handlePaymentSuccess = async () => {
-    const { error } = await supabase
-      .from('students')
-      .update({ fines: 0 })
-      .eq('email', user.email);
-
-    if (error) {
-      console.error('Error updating fines:', error);
-    } else {
-      setFineAmount(0);
-    }
-  };
   useEffect(() => {
     const fetchBooks = async () => {
       setLoadingBooks(true);
@@ -108,34 +81,78 @@ const { window, location } =
 
 
 const filteredBooks = books.filter((b) => {
-  if (activeYear === "FE") return b.year === "FE"; // no branch filter
+  if (activeYear === "FE") return b.year === "FE";
   if (!activeBranch) return false;
   return b.year === activeYear && b.branch === activeBranch;
 });
 
+
+  const fetchPurchasedBooks = async () => {
+    const { data, error } = await supabase
+      .from("book_purchases")
+      .select("book_id")
+      .eq("student_email", user.email);
+
+    if (!error && data) {
+      setPurchasedBookIds(data.map((d) => d.book_id));
+    }
+  };
+  useEffect(() => {
+    fetchPurchasedBooks();
+  }, [user.email]);
+
+  const handlePaymentSuccess = async () => {
+    if (selectedBooks.length === 0) return;
+
+    const purchases = selectedBooks.map(book => ({
+      student_email: user.email,
+      book_id: book.id,
+    }));
+
+    const { error } = await supabase
+      .from("book_purchases")
+      .insert(purchases);
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    setPurchasedBookIds(prev => [
+      ...prev,
+      ...selectedBooks.map(b => b.id),
+    ]);
+
+    setHasPaid(true);
+  setSelectedBooks([]);
+  setShowPaymentModal(false);
+  };
+
+
+
   return (
     <div className="min-h-screen bg-[#f8fafc] pb-24">
       <div className="max-w-7xl mx-auto px-6 pt-10 space-y-12">
-        
+
         {/* --- HERO SECTION (DASHBOARD STYLE) --- */}
         <section className="relative overflow-hidden rounded-[3rem] min-h-[70vh] flex items-center bg-gradient-to-br from-[#001f3f] to-[#001326] p-8 lg:p-12 text-white shadow-2xl">
           {/* Animated gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-br from-[#003366]/60 to-[#001a33]/60 animate-pulse opacity-70" />
-          
+
           <div className="relative z-10 w-full flex flex-wrap xl:flex-nowrap items-center justify-between gap-12">
-            
+
             {/* LEFT SIDE: TITLES */}
             <div className="flex-1 max-w-xl">
               <h1 className="text-6xl lg:text-7xl font-black leading-tight tracking-tight mb-2">
                 Book <span className="text-orange-500">Bank</span>
               </h1>
               <div className="h-1.5 w-24 bg-orange-600 mt-2 rounded-full mb-6" />
-              
+
               <p className="text-xl font-semibold text-blue-100 mb-4">
                 Full Semester Resource Bundles
               </p>
               <p className="text-base lg:text-lg text-blue-200 opacity-90 leading-relaxed mb-8">
-                Access verified textbooks for your entire phase at a fraction of the cost. 
+                Access verified textbooks for your entire phase at a fraction of the cost.
                 Select your current year to view available collections and schedule.
               </p>
 
@@ -156,12 +173,12 @@ const filteredBooks = books.filter((b) => {
                       setActiveBranch(null);
                     }}
                     className={`relative cursor-pointer rounded-[2rem] p-6 border transition-all duration-300 group flex flex-col h-full backdrop-blur-md
-                      ${activeYear === y 
-                        ? 'bg-white/15 border-orange-500/50 shadow-orange-500/10 -translate-y-1' 
+                        ${activeYear === y
+                        ? 'bg-white/15 border-orange-500/50 shadow-orange-500/10 -translate-y-1'
                         : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
                   >
                     <div className={`mb-4 flex h-12 w-12 items-center justify-center rounded-xl transition-transform group-hover:scale-110 
-                      ${activeYear === y ? 'bg-orange-500 text-[#001f3f]' : 'bg-orange-500/20 text-orange-400'}`}>
+                        ${activeYear === y ? 'bg-orange-500 text-[#001f3f]' : 'bg-orange-500/20 text-orange-400'}`}>
                       <Library size={24} />
                     </div>
                     <h3 className="text-lg font-bold">Phase {y}</h3>
@@ -206,10 +223,10 @@ const filteredBooks = books.filter((b) => {
         {/* --- MAIN CONTENT AREA --- */}
         {(activeYear === "FE" || activeBranch) && (
           <div ref={contentRef} className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start animate-in fade-in duration-700">
-            
+
             {/* Left: Books and Schedule */}
             <div className="lg:col-span-8 space-y-10">
-              
+
               {/* Books List */}
               <div className="space-y-6">
                 <div className="flex items-center gap-4">
@@ -226,33 +243,62 @@ const filteredBooks = books.filter((b) => {
                       <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Syncing Bundle...</p>
                     </div>
                   ) : (
-                    filteredBooks.map((book) => (
-                      <div key={book.id} className="group bg-white rounded-3xl p-6 shadow-sm border border-slate-100 hover:border-orange-500/30 transition-all">
-                        <div className="flex justify-between items-start mb-4">
-                          <div className="p-3 bg-slate-50 rounded-xl group-hover:bg-orange-500/10 group-hover:text-orange-500 transition-colors">
-                            <BookOpen size={20} />
-                          </div>
-                          <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full">Bundle Item</span>
-                        </div>
-                        <h3 className="text-xl font-black text-slate-800 leading-tight">{book.title}</h3>
-                        <p className="text-sm text-slate-500 mt-2 italic">by {book.author}</p>
-                        <button
-  onClick={() => setShowPaymentModal(true)}
-  className="mt-4 w-full bg-orange-500 text-white py-3 rounded-2xl font-bold text-sm uppercase tracking-widest hover:bg-orange-600 transition-all active:scale-95"
->
-  Purchase Now
-</button>
+                    filteredBooks.map((book) => {
+                      const isSelected = selectedBooks.some(b => b.id === book.id);
+                      const isPurchased = purchasedBookIds.includes(book.id);
 
-                      </div>
-                    ))
+                      return (
+
+                        <div key={book.id} className="group bg-white rounded-3xl p-6 shadow-sm border border-slate-100 hover:border-orange-500/30 transition-all">
+                          <div className="flex justify-between items-start mb-4">
+                            <div className="p-3 bg-slate-50 rounded-xl group-hover:bg-orange-500/10 group-hover:text-orange-500 transition-colors">
+                              <BookOpen size={20} />
+                            </div>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full">Bundle Item</span>
+                          </div>
+                          <h3 className="text-xl font-black text-slate-800 leading-tight">{book.title}</h3>
+                          <p className="text-sm text-slate-500 mt-2 italic">by {book.author}</p>
+                          <p className="mt-3 text-sm font-bold text-orange-600">
+                            ₹{book.price}
+                          </p>
+
+                          <button
+                            disabled={isSelected || isPurchased}
+                            onClick={() => {
+                              if (!isSelected && !isPurchased) {
+                                setSelectedBooks(prev => [...prev, book]);
+                              }
+                            }}
+                            className={`mt-4 w-full py-3 rounded-2xl font-bold text-sm uppercase tracking-widest transition-all
+    ${isPurchased
+                                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                : isSelected
+                                  ? "bg-green-200 text-green-700 cursor-not-allowed"
+                                  : "bg-orange-500 text-white hover:bg-orange-600 active:scale-95"
+                              }`}
+                          >
+                            {isPurchased
+                              ? "Purchased"
+                              : isSelected
+                                ? "Added ✓"
+                                : "Add to Bundle"}
+                          </button>
+
+
+
+                        </div>
+
+                      );
+                    })
                   )}
+
                 </div>
               </div>
 
               {/* Schedule Card (Dark Themed) */}
               <div className="relative bg-[#001a33] rounded-[3rem] p-10 text-white overflow-hidden shadow-2xl border border-white/5">
                 <Clock className="absolute -right-10 -top-10 w-64 h-64 text-orange-500/5 rotate-12" />
-                
+
                 <div className="relative z-10 space-y-8">
                   <div className="flex justify-between items-center flex-wrap gap-4">
                     <div>
@@ -261,7 +307,7 @@ const filteredBooks = books.filter((b) => {
                       </h3>
                       <p className="text-blue-200/60 font-medium">Phase {activeYear} • {activeBranch || 'Freshman'}</p>
                     </div>
-                    
+
                     <div className="flex gap-2 bg-white/5 p-1.5 rounded-2xl border border-white/10">
                       <div className="px-4 py-2 bg-orange-500 rounded-xl text-[#001f3f] font-black text-xs uppercase">Verified Slot</div>
                     </div>
@@ -285,7 +331,7 @@ const filteredBooks = books.filter((b) => {
             <aside className="lg:col-span-4 sticky top-10">
               <div className="bg-white rounded-[2.5rem] border border-slate-100 p-8 shadow-2xl space-y-8 overflow-hidden relative">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 rounded-full blur-3xl" />
-                
+
                 <div className="text-center">
                   <div className="w-20 h-20 bg-orange-50 text-orange-500 rounded-3xl flex items-center justify-center mx-auto mb-6">
                     <CreditCard size={40} />
@@ -295,26 +341,54 @@ const filteredBooks = books.filter((b) => {
                 </div>
 
                 <div className="bg-white p-6 mb-6 border border-gray-200 rounded-2xl">
-                <span className="text-gray-400 text-xs uppercase tracking-widest font-bold">Total Balance</span>
-                <h2 className="text-3xl font-black text-gray-800 mt-2">
-                  {loadingFines ? 'Loading...' : `₹${fineAmount.toFixed(2)}`}
-                </h2>
-              </div>
+                  <span className="text-gray-400 text-xs uppercase tracking-widest font-bold">Total Amount</span>
+                  <h2 className="text-3xl font-black text-gray-800 mt-2">
+                    ₹{totalPrice.toFixed(2)}
 
-                {fineAmount > 0 && !loadingFines ? (
-                <button
-                  onClick={() => setShowPaymentModal(true)}
-                  className="w-full bg-blue-200 text-blue-700 py-4 rounded-2xl font-bold text-lg hover:bg-blue-300 transition-all transform hover:-translate-y-1 active:scale-95"
-                >
-                  PAY NOW
-                </button>
-              ) : (
-                !loadingFines && (
-                  <div className="py-4 px-6 bg-green-100 border border-green-200 rounded-2xl text-green-600 font-bold">
-                    All Dues Cleared
+                  </h2>
+                </div>
+                {selectedBooks.length > 0 && (
+                  <div className="space-y-3">
+                    {selectedBooks.map(book => (
+                      <div
+                        key={book.id}
+                        className="flex justify-between items-center bg-gray-50 px-4 py-3 rounded-xl"
+                      >
+                        <span className="text-sm font-semibold">{book.title}</span>
+                        <button
+                          onClick={() =>
+                            setSelectedBooks(prev =>
+                              prev.filter(b => b.id !== book.id)
+                            )
+                          }
+                          className="text-red-500 text-xs font-bold hover:underline"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ))}
                   </div>
-                )
-              )}
+                )}
+
+
+                {selectedBooks.length > 0 ? (
+  <button
+    onClick={() => setShowPaymentModal(true)}
+    className="w-full bg-blue-200 text-blue-700 py-4 rounded-2xl font-bold text-lg hover:bg-blue-300 transition-all"
+  >
+    PAY HERE
+  </button>
+) : hasPaid ? (
+  <div className="py-4 px-6 bg-green-100 border border-green-200 rounded-2xl text-green-600 font-bold text-center">
+    Payment Done ✓
+  </div>
+) : (
+  <div className="py-4 px-6 bg-gray-100 border border-gray-200 rounded-2xl text-gray-500 font-bold text-center">
+    Select books to proceed
+  </div>
+)}
+
+
 
                 <div className="flex items-start gap-4 p-4 bg-orange-50/50 rounded-2xl border border-orange-100">
                   <ShieldCheck className="text-orange-500 shrink-0" size={20} />
@@ -330,10 +404,12 @@ const filteredBooks = books.filter((b) => {
       </div>
       {showPaymentModal && (
         <PaymentModal
-          amount={fineAmount}
+          amount={totalPrice}
           onClose={() => setShowPaymentModal(false)}
           onSuccess={handlePaymentSuccess}
         />
+
+
       )}
     </div>
   );

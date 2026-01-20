@@ -19,6 +19,7 @@ export interface Book {
   semester: number;
   image?: string;
   course_code?: string;     // NEW
+   price: number;
 }
 
 
