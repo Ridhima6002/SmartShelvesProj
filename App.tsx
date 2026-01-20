@@ -10,6 +10,7 @@ import SearchResults from './components/SearchResults'
 import AuthModal from './components/AuthModal';
 import { supabase } from './services/supabase';
 import BookBankData from './components/BookBankData'
+import libImage from "./components/assets/libImage.jpg";
 import { RACK_INFO } from './data';
 import { Book, Year, Branch, User } from './types';
 import { onAuthStateChanged, signOut } from './services/firebase';
@@ -616,7 +617,7 @@ const App: React.FC = () => {
               {/* Background Image with Overlay */}
               <div className="absolute inset-0">
                 <img
-                  src="components/assets/libImage.jpg"
+                  src={libImage}
                   alt="Library"
                   className="w-full h-full object-cover opacity-60"
                 />
